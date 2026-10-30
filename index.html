@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Regulação Ambulatorial</title>
+<style>
+  :root{
+    --navy:#1f3f75; --navy2:#16305c; --blue:#2d5f9a; --blue-l:#6fa0d6;
+    --bg:#f7f3f7; --line:#c9cbd2; --txt:#222; --muted:#555; --th:#8a8f96;
+    --row:#eef0f4; --row2:#f8f9fb; --hl:#f2e33a; --red:#c0282d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{min-height:100vh}
+  html{scroll-padding-bottom:64px}
+  body{font-family:Verdana,Tahoma,Arial,sans-serif;font-size:11px;color:var(--txt);background:var(--bg);padding-bottom:60px}
+  a{color:inherit}
+
+  /* Cabeçalho */
+  header{display:flex;height:72px;background:linear-gradient(90deg,#1d4f92 0%,#2f6db5 45%,#7aa8dc 100%)}
+  .brand{background:#fff;display:flex;align-items:center;gap:8px;padding:0 18px 0 10px;border-bottom-right-radius:28px;min-width:300px}
+  .brand svg{flex:none}
+  .brand small{display:block;color:var(--red);font-weight:bold;font-size:11px}
+  .brand b{display:block;font-family:Arial,sans-serif;font-size:22px;color:#333;letter-spacing:-.3px}
+  .hright{flex:1;display:flex;flex-direction:column;justify-content:space-between}
+  .htitle{color:#fff;text-align:center;font-weight:bold;font-size:14px;letter-spacing:1px;line-height:17px;padding-top:6px;text-shadow:1px 1px 2px #0005}
+  .hinfo{background:linear-gradient(#f4f4f6,#dfe3ea);margin-right:40px;border-top-right-radius:12px;display:flex;justify-content:space-around;padding:3px 10px;color:#444;font-family:Georgia,serif;font-size:11px}
+
+  /* Menu */
+  nav{background:var(--navy);display:flex;justify-content:space-between;height:24px;position:relative;z-index:20}
+  nav ul{list-style:none;margin:0;padding:0;display:flex}
+  nav>ul>li{position:relative}
+  nav>ul>li>span{display:block;color:#fff;font-weight:bold;font-size:12px;padding:5px 13px;cursor:pointer;white-space:nowrap}
+  nav>ul>li:hover>span{background:#2b528f}
+  nav .dd{display:none;position:absolute;top:24px;left:0;background:var(--navy);min-width:210px;border:1px solid #fff;flex-direction:column}
+  nav>ul>li:hover .dd{display:flex}
+  nav .dd li{color:#fff;font-weight:bold;font-size:12px;padding:4px 12px;border-bottom:1px solid #fff;cursor:pointer;white-space:nowrap}
+  nav .dd li:last-child{border-bottom:0}
+  nav .dd li:hover{background:#3a6bb5}
+  .nright{display:flex;align-items:center;gap:22px;color:#fff;font-weight:bold;font-size:12px;padding-right:12px}
+  .nright span{cursor:pointer}
+
+  main{padding:8px 12px}
+
+  /* Abas */
+  .tabsrow{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .tabs{display:flex;gap:2px}
+  .tab{padding:5px 0;width:160px;text-align:center;font-size:12px;color:#555;background:linear-gradient(#f2f2f4,#dcdde2);clip-path:polygon(8% 0,100% 0,100% 100%,0 100%);cursor:pointer;user-select:none}
+  .tab.on{background:linear-gradient(#3b74b4,#24528b);color:#fff;font-weight:bold}
+  .tab.dis{opacity:.45;cursor:not-allowed}
+  .pathead{font-size:11px;color:#333;padding-bottom:4px}
+  .screen-title{font-weight:bold;color:var(--navy);font-size:13px;margin-right:16px}
+
+  /* Formulários */
+  .row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:flex-end;margin-bottom:8px}
+  .f{display:flex;flex-direction:column}
+  .f label{color:var(--muted);font-size:11px;margin-bottom:1px}
+  input[type=text],input[type=date],input[type=time],select,textarea{font:11px Verdana,Tahoma,sans-serif;border:1px solid #cfd2d8;background:#fbfbfd;padding:2px 4px;height:20px}
+  textarea{height:auto}
+  input:focus,select:focus,textarea:focus{outline:1px solid #6fa0d6;background:#fff}
+  .btn{font:11px Verdana,sans-serif;background:linear-gradient(#fff,#e2e3e8);border:1px solid #9a9ea8;padding:2px 12px 2px 8px;height:22px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .btn:hover{background:linear-gradient(#fff,#d2d6df)}
+  .btn.pri{border-color:#2d5f9a;color:#1d4b85;font-weight:bold}
+  .ico{width:13px;height:13px;display:inline-block}
+  fieldset{border:1px solid #d3d5db;padding:6px 8px;margin:0 0 8px}
+  .chk{display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:12px}
+
+  /* Tabelas */
+  table.g{width:100%;border-collapse:collapse;margin:6px 0}
+  table.g th{background:linear-gradient(#9a9fa6,#7f848b);color:#fff;text-align:left;font-size:10px;padding:3px 5px;border-right:1px solid #fff}
+  table.g td{padding:4px 5px;border-bottom:1px solid #fff;font-size:11px}
+  table.g tr:nth-child(odd) td{background:var(--row)}
+  table.g tr:nth-child(even) td{background:var(--row2)}
+  table.g tr.sel td{background:#d9e6f7}
+  table.g tr.click{cursor:pointer}
+  table.g tr.click:hover td{background:#e3ecf8}
+  .empty{color:#777;padding:14px;text-align:center}
+  .st{display:inline-block;padding:1px 6px;border-radius:2px;font-size:10px;font-weight:bold;color:#fff}
+  .st.agendado{background:#2d5f9a}.st.presente{background:#2e8540}.st.ausente{background:#c0282d}.st.cancelado{background:#888}
+  .st.pendente{background:#d08a00}.st.agendada{background:#2e8540}.st.devolvida{background:#888}
+
+  /* Calendário */
+  .months{display:flex;gap:2px;margin-top:6px}
+  .month{padding:3px 0;width:135px;text-align:center;font-size:12px;background:linear-gradient(#f4f4f6,#e0e1e6);clip-path:polygon(7% 0,100% 0,100% 100%,0 100%);cursor:pointer}
+  .month.on{background:linear-gradient(#3b74b4,#24528b);color:#fff;font-weight:bold}
+  .days{display:grid;grid-auto-flow:column;grid-template-rows:auto auto;border:1px solid var(--line);border-top:2px solid var(--blue);overflow-x:auto}
+  .days div{text-align:center;padding:4px 0;min-width:30px;border-right:1px solid #e1e2e6;font-size:11px}
+  .days .wd{color:#2d5f9a;font-weight:bold;border-bottom:1px solid #e1e2e6}
+  .days .wd.we{color:var(--red)}
+  .days .d{cursor:pointer;color:#222}
+  .days .d:hover{background:#e3ecf8}
+  .days .d.off{color:#bbb;cursor:default;background:none}
+  .days .d.full{color:#c77;cursor:default}
+  .days .d.today{font-weight:bold;text-decoration:underline}
+  .days .d.on{background:var(--hl)}
+  .sect{color:var(--navy);font-weight:bold;font-size:13px;border-bottom:1px solid var(--line);margin:12px 0 4px;padding-bottom:2px}
+
+  /* Rodapé */
+  footer{position:fixed;left:0;right:0;bottom:0;font-size:11px;color:#fff;z-index:10}
+  .fav{background:var(--navy);padding:3px 10px;display:flex;gap:16px;align-items:center}
+  .fav a{font-weight:bold;cursor:pointer;text-decoration:underline}
+  .fav .arr{letter-spacing:-3px;font-weight:bold;color:#9cc0ec}
+  .fbar{background:var(--navy2);padding:3px 10px;display:flex;justify-content:space-between;font-weight:bold}
+
+  /* Modal / aviso */
+  .ov{position:fixed;inset:0;background:#0005;display:flex;align-items:center;justify-content:center;z-index:50}
+  .modal{background:#fff;border:1px solid var(--navy);width:min(720px,94vw);max-height:90vh;overflow:auto;box-shadow:0 6px 30px #0006}
+  .modal h3{margin:0;background:var(--navy);color:#fff;font-size:12px;padding:6px 10px;display:flex;justify-content:space-between}
+  .modal h3 span{cursor:pointer}
+  .modal .mb{padding:10px}
+  .modal .mf{padding:8px 10px;border-top:1px solid #ddd;display:flex;justify-content:flex-end;gap:6px}
+  #toast{position:fixed;top:110px;left:50%;transform:translateX(-50%);background:#fffbe0;border:1px solid #d6b800;color:#333;padding:8px 18px;font-size:12px;display:none;z-index:60;box-shadow:0 3px 12px #0003}
+  #toast.err{background:#fde8e8;border-color:var(--red)}
+  .right{display:flex;justify-content:flex-end;gap:6px}
+  .hint{color:#777;font-size:10px}
+
+  @media (max-width:760px){
+    header{height:auto;flex-direction:column}
+    .brand{min-width:0;border-radius:0}
+    .hinfo{margin:0;flex-wrap:wrap;gap:4px}
+    nav{height:auto;flex-wrap:wrap}
+    nav ul{flex-wrap:wrap}
+    .nright{display:none}
+    .tab{width:auto;padding:5px 14px}
+    .fbar span:first-child{display:none}
+  }
+  @media print{header,nav,footer,.noprint{display:none!important}body{background:#fff;padding:0}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+      <circle cx="23" cy="23" r="21" fill="#fff" stroke="#c0282d" stroke-width="3"/>
+      <rect x="18" y="9" width="10" height="28" rx="2" fill="#c0282d"/>
+      <rect x="9" y="18" width="28" height="10" rx="2" fill="#c0282d"/>
+    </svg>
+    <div><small>Rede Regional de Saúde (demo)</small><b>Central de Regulação</b></div>
+  </div>
+  <div class="hright">
+    <div class="htitle">MÓDULO DE REGULAÇÃO<br>AMBULATORIAL</div>
+    <div class="hinfo"><span>Usuário: USUÁRIO DEMO</span><span>Perfil: Recepção</span><span>Unidade: <span class="unidade"></span></span></div>
+  </div>
+</header>
+
+<nav>
+  <ul>
+    <li><span>Cadastro</span><ul class="dd">
+      <li data-go="pacientes">Paciente</li>
+      <li data-go="profissionais">Profissional</li>
+    </ul></li>
+    <li><span>Manutenção</span><ul class="dd">
+      <li data-go="profissionais">Agenda do Profissional</li>
+      <li data-go="reset">Restaurar dados de exemplo</li>
+    </ul></li>
+    <li><span>Agendamento</span><ul class="dd">
+      <li data-go="agenda">Agenda</li>
+      <li data-go="extra">Extra</li>
+      <li data-go="demanda">Cadastro Demanda por Recurso</li>
+      <li data-go="diaria">Agenda Diária</li>
+      <li data-go="recepcao">Recepção</li>
+      <li data-go="troca">Troca de Paciente</li>
+      <li data-go="solicitacoes">Solicitações</li>
+      <li data-go="ausentes">Ausentes</li>
+    </ul></li>
+    <li><span>Relatório</span><ul class="dd">
+      <li data-go="relatorio">Agendamentos por Período</li>
+    </ul></li>
+    <li><span>Consulta</span><ul class="dd">
+      <li data-go="consulta">Agendamentos do Paciente</li>
+    </ul></li>
+    <li><span>Ação Judicial</span><ul class="dd">
+      <li data-go="judicial">Cadastrar / Listar</li>
+    </ul></li>
+  </ul>
+  <div class="nright"><span data-go="contato">Fale Conosco</span><span data-go="contato">Help Desk</span></div>
+</nav>
+
+<main id="app"></main>
+
+<footer>
+  <div class="fav"><a data-go="agenda" style="text-decoration:underline">Favoritos</a><span class="arr">❯❯❯</span>
+    <a data-go="agenda">Agenda</a><a data-go="demanda">Cadastro Demanda por Recurso</a><a data-go="diaria">Agenda Diária</a></div>
+  <div class="fbar"><span>Sistema de Regulação (demonstração) | dados fictícios</span><span>HELP DESK &nbsp;Dúvidas e Esclarecimentos | Atendimento 24 horas | suporte@exemplo.com | (00) 0000-0000</span></div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+/* ===================== Dados base (fictícios) ===================== */
+const UNIDADE = 'HOSPITAL REGIONAL MODELO', MUN = 'VALE VERDE';
+const UNID_EXT = [
+  {nome:'AME VALE VERDE', mun:'VALE VERDE'},
+  {nome:'HOSPITAL SANTA LUZIA', mun:'SERRA AZUL'},
+  {nome:'POLICLÍNICA CENTRAL', mun:'RIO CLARO DO OESTE'},
+];
+const PROFS = [
+  {id:1, nome:'ANDRÉ LUIZ CARVALHO',      esp:'Ortopedia - Trauma', dias:[1,3,5]},
+  {id:2, nome:'BEATRIZ SOUZA LIMA',        esp:'Ortopedia - Trauma', dias:[2,4]},
+  {id:3, nome:'RODRIGO ALMEIDA PRADO',     esp:'Ortopedia - Trauma', dias:[1,2,3]},
+  {id:4, nome:'VICTOR HUGO MENDES',        esp:'Ortopedia - Trauma', dias:[3,4,5]},
+  {id:5, nome:'FERNANDA ROCHA DIAS',       esp:'Neurocirurgia',      dias:[1,4]},
+  {id:6, nome:'ERLON BATISTA FREITAS',     esp:'Neurocirurgia',      dias:[2,3,5]},
+  {id:7, nome:'MARIANA COSTA RIBAS',       esp:'Cardiologia',        dias:[1,2,3,4,5]},
+  {id:8, nome:'PAULO HENRIQUE NUNES',      esp:'Oftalmologia',       dias:[2,4]},
+  {id:9, nome:'JULIANA TEIXEIRA MOURA',    esp:'Endocrinologia',     dias:[1,3]},
+  {id:10,nome:'GUSTAVO PEREIRA LOPES',     esp:'Urologia',           dias:[4,5]},
+];
+const ESPS = [...new Set(PROFS.map(p=>p.esp))].sort();
+const SLOTS = []; for(let h=7;h<11;h++) for(let m=0;m<60;m+=20) SLOTS.push(pad(h)+':'+pad(m));
+const WD = ['D','S','T','Q','Q','S','S'];
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const TIPOS = ['Primeira Vez','Retorno','Interconsulta'];
+
+const SEED_PAC = [
+  ['MARIA APARECIDA SANTOS','', '1948-03-12','JOSEFA SANTOS'],
+  ['JOÃO CARLOS OLIVEIRA','', '1961-07-25','ANA OLIVEIRA'],
+  ['ANTÔNIA FERREIRA GOMES','', '1940-11-02','BENEDITA FERREIRA'],
+  ['LUCAS GABRIEL MARTINS','', '1998-01-19','CRISTINA MARTINS'],
+  ['SEBASTIÃO RIBEIRO DA SILVA','', '1955-05-30','MARIA RIBEIRO'],
+  ['ALINE CRISTINA BARBOSA','', '1987-09-14','SUELI BARBOSA'],
+  ['FRANCISCO DE ASSIS MOREIRA','', '1950-12-08','RITA MOREIRA'],
+  ['TERESA CRISTINA PAIVA','', '1946-04-21','LÚCIA PAIVA'],
+  ['RAFAEL HENRIQUE CASTRO','', '1979-06-03','MÁRCIA CASTRO'],
+  ['ROBERTA NASCIMENTO','ROBERTO NASCIMENTO','1992-02-27','IVONE NASCIMENTO'],
+  ['JOSÉ ROBERTO CAMARGO','', '1958-10-16','ODETE CAMARGO'],
+  ['HELENA VIEIRA DUARTE','', '1939-08-09','AMÉLIA VIEIRA'],
+];
+
+/* ===================== Utilitários ===================== */
+function pad(n){return String(n).padStart(2,'0')}
+const $ = s => document.querySelector(s);
+const iso = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const br = s => s ? s.slice(8,10)+'-'+s.slice(5,7)+'-'+s.slice(0,4) : '';
+const today = () => iso(new Date());
+const addDays = (s,n) => { const d=new Date(s+'T12:00'); d.setDate(d.getDate()+n); return iso(d); };
+const norm = s => (s||'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase();
+const esc = s => (s??'').toString().replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const prof = id => PROFS.find(p=>p.id==id);
+const pac  = id => S.patients.find(p=>p.id==id);
+function rnd(seed){ let x=seed; return ()=> (x=(x*16807)%2147483647)/2147483647; }
+function digits(r,n){ let s=''; for(let i=0;i<n;i++) s+=Math.floor(r()*10); return s; }
+
+function toast(msg, err){
+  const t=$('#toast'); t.textContent=msg; t.className=err?'err':''; t.style.display='block';
+  clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none', 3200);
+}
+
+/* ===================== Estado / persistência ===================== */
+const KEY='regamb_demo_v1';
+let S;
+function seed(){
+  const r=rnd(42);
+  const patients = SEED_PAC.map((p,i)=>({
+    id: 35200400+i*7, nome:p[0], social:p[1], nasc:p[2], mae:p[3],
+    cpf:digits(r,11), cns:'7'+digits(r,14), rg:digits(r,9), pront:String(110000+i*137),
+    fone:'(00) 9'+digits(r,4)+'-'+digits(r,4)
+  }));
+  const appts=[]; let aid=1;
+  const t=today();
+  for(let off=-4; off<=6; off++){
+    const day=addDays(t,off), wd=new Date(day+'T12:00').getDay();
+    PROFS.filter(p=>p.dias.includes(wd)).forEach(p=>{
+      SLOTS.forEach(h=>{
+        if(r()<0.45){
+          const pa=patients[Math.floor(r()*patients.length)];
+          let st='agendado';
+          if(off<0) st = r()<0.75?'presente':'agendado';
+          appts.push({id:aid++, pac:pa.id, prof:p.id, data:day, hora:h, tipo:TIPOS[Math.floor(r()*2)], st, obs:'', unidade:UNIDADE, chegada: st==='presente'?h:''});
+        }
+      });
+    });
+  }
+  const demandas=[
+    {id:1, tipo:'Consulta', esp:'Neurocirurgia', pac:patients[2].id, data:addDays(t,-6), prio:true, origem:'Ambulatório', doc:'', solic:'DR. ERLON B. FREITAS', tipoCons:'Primeira Vez', ano:'', mes:'', turno:'', obs:'Aguardando vaga', st:'pendente', unidInd:UNIDADE, tele:'Não', cid:'M54.5'},
+    {id:2, tipo:'Consulta', esp:'Ortopedia - Trauma', pac:patients[4].id, data:addDays(t,-2), prio:false, origem:'Pronto Socorro', doc:'', solic:'DR. VICTOR H. MENDES', tipoCons:'Retorno', ano:'', mes:'', turno:'Manhã', obs:'Pós alta - solicitar TC', st:'pendente', unidInd:UNIDADE, tele:'Não', cid:'S82.0'},
+  ];
+  return {patients, appts, demandas, nextAppt:aid, nextDem:3, nextPac:35200600};
+}
+function load(){ try{ S=JSON.parse(localStorage.getItem(KEY)); }catch(e){} if(!S||!S.patients) S=seed(); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+load();
+
+/* Estado da interface (não persistido) */
+const UI = {
+  view:'agenda',
+  ag:{tab:'paciente', pac:null, q:{}, esp:'', tipo:'Primeira Vez', retorno:false, inter:false, profNome:'', mes:null, dia:null, ext:false},
+  dem:{tab:'inserir', pac:null, q:{}, form:{}, filtro:{st:'',esp:''}},
+  diaria:{data:today(), prof:''},
+  pacientes:{q:{}},
+};
+
+/* ===================== Componentes ===================== */
+const ICON = {
+  search:'<svg class="ico" viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" fill="#cfe2ff" stroke="#2d5f9a" stroke-width="1.6"/><path d="M10 10l4.5 4.5" stroke="#8a5a1a" stroke-width="2.2"/></svg>',
+  doc:'<svg class="ico" viewBox="0 0 16 16"><path d="M3 1h7l3 3v11H3z" fill="#fff" stroke="#2d5f9a"/><path d="M10 1v3h3" fill="none" stroke="#2d5f9a"/></svg>',
+  down:'<svg class="ico" viewBox="0 0 16 16"><path d="M8 2v9M4 7l4 5 4-5" stroke="#2d5f9a" stroke-width="2" fill="none"/></svg>',
+  clr:'<svg class="ico" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" fill="#fff" stroke="#777"/></svg>',
+  ok:'<svg class="ico" viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" stroke="#2e8540" stroke-width="2.2" fill="none"/></svg>',
+  x:'<svg class="ico" viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13" stroke="#c0282d" stroke-width="2.2"/></svg>',
+  print:'<svg class="ico" viewBox="0 0 16 16"><rect x="4" y="1" width="8" height="5" fill="#fff" stroke="#555"/><rect x="1" y="6" width="14" height="6" fill="#bbb" stroke="#555"/><rect x="4" y="10" width="8" height="5" fill="#fff" stroke="#555"/></svg>',
+};
+const btn = (label, act, icon, extra='') => `<button class="btn ${extra}" data-act="${act}">${icon?ICON[icon]:''}${label}</button>`;
+const sel = (name, opts, val, ph) => `<select name="${name}">${ph!==undefined?`<option value="">${ph}</option>`:''}${opts.map(o=>{const v=typeof o==='object'?o.v:o, l=typeof o==='object'?o.l:o; return `<option value="${esc(v)}" ${String(v)===String(val??'')?'selected':''}>${esc(l)}</option>`}).join('')}</select>`;
+const fld = (label, inner, w) => `<div class="f" ${w?`style="width:${w}px"`:''}><label>${label}</label>${inner}</div>`;
+const inp = (name, val, w, type='text') => `<input type="${type}" name="${name}" value="${esc(val??'')}" style="width:${w||100}px">`;
+
+const Q_FIELDS = [['pront','Prontuário',80],['cns','CNS',110],['cpf','CPF',95],['rg','RG',85],['id','Código',85],['nome','Nome',220],['social','Nome Social',180],['nasc','Nascimento',85],['mae','Filiação 1',230]];
+
+function searchPatients(q){
+  const keys = Object.keys(q).filter(k=>q[k]);
+  if(!keys.length) return S.patients;
+  return S.patients.filter(p=>keys.every(k=>{
+    if(k==='nasc') return br(p.nasc).includes(q.nasc) || p.nasc.includes(q.nasc);
+    return norm(p[k]).includes(norm(q[k]));
+  }));
+}
+
+/* Busca de paciente reaproveitada nas telas */
+function patSearch(ctx, st, withNovo){
+  const res = searchPatients(st.q);
+  return `
+  <form class="row" data-search="${ctx}">
+    ${Q_FIELDS.map(([k,l,w])=>fld(l, inp(k, st.q[k], w))).join('')}
+    <button class="btn" type="submit">${ICON.search}Buscar</button>
+    ${withNovo?btn('Novo','novoPac','doc'):''}
+  </form>
+  <table class="g"><thead><tr><th style="width:24px"></th><th>CPF</th><th>Código</th><th>Nome</th><th>Nome Social</th><th>Nascimento</th><th>Filiação 1</th></tr></thead><tbody>
+  ${res.length? res.map(p=>`<tr class="click ${st.pac==p.id?'sel':''}" data-pick="${ctx}" data-id="${p.id}">
+      <td><input type="radio" ${st.pac==p.id?'checked':''}></td><td>${p.cpf}</td><td>${p.id}</td><td>${esc(p.nome)}</td><td>${esc(p.social)}</td><td>${br(p.nasc)}</td><td>${esc(p.mae)}</td></tr>`).join('')
+    : `<tr><td colspan="7" class="empty">Nenhum paciente encontrado. Use "Novo" para cadastrar.</td></tr>`}
+  </tbody></table>`;
+}
+
+function pacHeader(id){ const p=pac(id); return p? `${p.id} - ${esc(p.nome)}` : ''; }
+
+/* ===================== Tela: Agenda ===================== */
+function freeSlots(profId, day){
+  const busy = new Set(S.appts.filter(a=>a.prof==profId && a.data===day && a.st!=='cancelado').map(a=>a.hora));
+  return SLOTS.filter(h=>!busy.has(h));
+}
+function profsFor(day, A){
+  const wd = new Date(day+'T12:00').getDay();
+  return PROFS.filter(p=> p.dias.includes(wd) && (!A.esp || p.esp===A.esp) && (!A.profNome || norm(p.nome).includes(norm(A.profNome))));
+}
+
+function vAgenda(){
+  const A=UI.ag, has=!!A.pac;
+  const tabs=[['paciente','Paciente'],['selecao','Seleção'],['interna','Agenda Interna'],['externa','Agenda Externa']];
+  let body='';
+  if(A.tab==='paciente') body = patSearch('ag', A, true);
+  if(A.tab==='selecao') body = `
+    <div class="row">
+      ${fld('Especialidade', sel('esp', ESPS, A.esp, 'Todas as especialidades'))}
+      ${fld('Tipo de Atendimento', sel('tipo', TIPOS, A.tipo))}
+    </div>
+    <div class="sect">Agendamentos do paciente</div>
+    ${apptTable(S.appts.filter(a=>a.pac==A.pac).sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora)), false)}
+    <div class="right">${btn('Avançar para Agenda Interna','goInterna','down','pri')}</div>`;
+  if(A.tab==='interna') body = vInterna();
+  if(A.tab==='externa') body = vExterna();
+  return `
+  <div class="tabsrow">
+    <div class="tabs">${tabs.map(([k,l])=>`<div class="tab ${A.tab===k?'on':''} ${k!=='paciente'&&!has?'dis':''}" data-agtab="${k}">${l}</div>`).join('')}</div>
+    <div class="pathead">${pacHeader(A.pac)}</div>
+  </div>${body}`;
+}
+
+function monthList(){
+  const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()-1);
+  const out=[]; for(let i=0;i<5;i++){ out.push({y:d.getFullYear(), m:d.getMonth()}); d.setMonth(d.getMonth()+1); } return out;
+}
+function vInterna(){
+  const A=UI.ag, t=today();
+  const ms=monthList();
+  if(A.mes===null) A.mes=1;
+  const {y,m}=ms[A.mes];
+  const nd=new Date(y,m+1,0).getDate();
+  let wds='', ds='';
+  for(let d=1; d<=nd; d++){
+    const day=y+'-'+pad(m+1)+'-'+pad(d), wd=new Date(y,m,d).getDay();
+    const profs = day<t ? [] : profsFor(day, A);
+    const free = profs.reduce((s,p)=>s+freeSlots(p.id,day).length,0);
+    const cls = ['d', !profs.length?'off':(free?'':'full'), day===t?'today':'', A.dia===day?'on':''].join(' ');
+    wds += `<div class="wd ${wd===0||wd===6?'we':''}">${WD[wd]}</div>`;
+    ds  += `<div class="${cls}" ${profs.length&&free?`data-day="${day}"`:''} title="${profs.length?free+' vaga(s)':'Sem agenda'}">${d}</div>`;
+  }
+  // os dois "rows" do grid: cabeçalho de dias da semana em cima, números embaixo
+  const cells = []; const W=wds.split('</div>').filter(Boolean), D=ds.split('</div>').filter(Boolean);
+  for(let i=0;i<W.length;i++){ cells.push(W[i]+'</div>', D[i]+'</div>'); }
+
+  let tbl='';
+  if(A.dia){
+    const profs=profsFor(A.dia, A).filter(p=>freeSlots(p.id,A.dia).length);
+    tbl = `<div class="sect">Consulta — ${br(A.dia)}</div>
+    <table class="g"><thead><tr><th>Unidade</th><th>Município</th><th>Profissional</th><th>Tipo Atendimento</th><th>Faixa Etária</th><th>Especialidade</th><th>Tipo</th><th>Horário</th><th>Vagas</th><th></th></tr></thead><tbody>
+    ${profs.length?profs.map(p=>{const fs=freeSlots(p.id,A.dia); return `<tr data-prow="${p.id}">
+      <td><b>${UNIDADE}</b></td><td>${MUN}</td><td>${p.nome}</td><td>Presencial</td><td>Todas</td><td>${p.esp}</td>
+      <td>${sel('tipo_'+p.id, TIPOS, A.retorno?'Retorno':A.inter?'Interconsulta':A.tipo)}</td>
+      <td>${sel('hora_'+p.id, fs, fs[0])}</td><td>${fs.length}</td>
+      <td><button class="btn pri" data-act="agendar" data-prof="${p.id}">${ICON.ok}Agendar</button></td></tr>`}).join('')
+      :`<tr><td colspan="10" class="empty">Sem vagas para os filtros selecionados.</td></tr>`}
+    </tbody></table>
+    ${fld('Observação', `<input type="text" name="obs" style="width:100%" value="${esc(A.obs||'')}">`)}`;
+  } else tbl = `<p class="hint" style="margin-top:12px">Selecione um dia disponível no calendário. Dias em cinza não possuem agenda${A.esp?' de '+A.esp:''}.</p>`;
+
+  return `
+  <div class="row">
+    <label class="chk"><input type="checkbox" name="retorno" ${A.retorno?'checked':''}>Retorno</label>
+    <label class="chk"><input type="checkbox" name="inter" ${A.inter?'checked':''}>Interconsulta</label>
+    ${fld('Especialidade', sel('esp', ESPS, A.esp, 'Todas'))}
+    ${fld('Nome do profissional', inp('profNome', A.profNome, 300))}
+    ${btn('Limpar','limparAg','clr')}
+  </div>
+  <div class="months">${ms.map((x,i)=>`<div class="month ${A.mes===i?'on':''}" data-mes="${i}">${MESES[x.m]}/${x.y}</div>`).join('')}</div>
+  <div class="days">${cells.join('')}</div>
+  ${tbl}`;
+}
+
+function vExterna(){
+  const A=UI.ag;
+  return `
+  <div class="row">${fld('Especialidade', sel('esp', ESPS, A.esp, 'Selecione'))}</div>
+  <p class="hint">Unidades externas da rede. A solicitação gera uma demanda para a central de regulação.</p>
+  <table class="g"><thead><tr><th>Unidade</th><th>Município</th><th>Especialidade</th><th>Previsão</th><th></th></tr></thead><tbody>
+  ${UNID_EXT.map((u,i)=>`<tr><td><b>${u.nome}</b></td><td>${u.mun}</td><td>${A.esp||'—'}</td><td>${15+i*10} dias</td>
+    <td><button class="btn" data-act="solicitarExt" data-u="${i}">${ICON.doc}Solicitar vaga</button></td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+/* ===================== Tela: Demanda por Recurso ===================== */
+function vDemanda(){
+  const D=UI.dem, F=D.form;
+  const tabs = `<div class="tabsrow"><div class="tabs"><span class="screen-title">Cadastro de Demanda por Recurso</span>
+    <div class="tab ${D.tab==='inserir'?'on':''}" data-demtab="inserir">Inserir</div>
+    <div class="tab ${D.tab==='listar'?'on':''}" data-demtab="listar">Listar</div></div>
+    <div class="pathead">${pacHeader(D.pac)}</div></div>`;
+  if(D.tab==='listar') return tabs + vDemList();
+  const anos=[0,1].map(i=>String(new Date().getFullYear()+i));
+  return tabs + `
+  <form id="demForm">
+  <div class="row">
+    ${fld('Tipo', sel('tipo',['Consulta','Exame','Procedimento'],F.tipo||'Consulta'))}
+    ${fld('Unidade', sel('unidade',[UNIDADE,...UNID_EXT.map(u=>u.nome)],F.unidade||UNIDADE), 560)}
+    ${fld('Data', inp('data', br(today()), 90))}
+    <label class="chk"><input type="checkbox" name="prio" ${F.prio?'checked':''}>Prioridade</label>
+  </div>
+  <div class="row">
+    ${fld('Especialidade*', sel('esp', ESPS, F.esp, 'Selecione especialidade'))}
+    ${fld('Origem', sel('origem',['Ambulatório','Pronto Socorro','Internação','Unidade Básica'],F.origem,'- Selecione -'))}
+    ${fld('Nº documento', inp('doc', F.doc, 110))}
+    ${fld('Profissional Solicitante', inp('solic', F.solic, 290))}
+    ${fld('Tipo da Consulta *', sel('tipoCons', TIPOS, F.tipoCons, '-- Selecione --'))}
+  </div>
+  <div class="row">
+    ${fld('Ano Pretendido', sel('ano', anos, F.ano, '-- Selecione --'))}
+    ${fld('Mês Pretendido', sel('mes', MESES, F.mes, '- Selecione -'))}
+    ${fld('Turno', sel('turno',['Manhã','Tarde'],F.turno,'-- Selecione'))}
+    ${fld('Observação', inp('obs', F.obs, 470))}
+  </div>
+  <div class="row">
+    ${fld('Status*', sel('st',[{v:'pendente',l:'Pendente'},{v:'agendada',l:'Agendada'},{v:'devolvida',l:'Devolvida'}],F.st,'- Selecione -'))}
+    ${fld('Unidade Indicada para Agendamento', sel('unidInd',[UNIDADE,...UNID_EXT.map(u=>u.nome)],F.unidInd,'- Selecione -'))}
+    ${fld('Aceita Teleconsulta', sel('tele',['Sim','Não'],F.tele,'- Selecione -'))}
+  </div>
+  <fieldset><div class="row" style="margin:0">
+    ${fld('CID', inp('cid', F.cid, 90))}
+    ${fld('Nome', inp('cidNome', F.cidNome, 560))}
+  </div></fieldset>
+  </form>
+  <div class="sect">Paciente</div>
+  ${patSearch('dem', D, true)}
+  <div class="right">${btn('Inserir','inserirDem','down','pri')}</div>`;
+}
+function vDemList(){
+  const f=UI.dem.filtro;
+  const list=S.demandas.filter(d=>(!f.st||d.st===f.st)&&(!f.esp||d.esp===f.esp)).sort((a,b)=>(b.prio-a.prio)||a.data.localeCompare(b.data));
+  return `<div class="row" data-filter="dem">
+    ${fld('Status', sel('st',[{v:'pendente',l:'Pendente'},{v:'agendada',l:'Agendada'},{v:'devolvida',l:'Devolvida'}],f.st,'Todos'))}
+    ${fld('Especialidade', sel('esp',ESPS,f.esp,'Todas'))}
+  </div>
+  <table class="g"><thead><tr><th>Nº</th><th>Data</th><th>Prior.</th><th>Paciente</th><th>Especialidade</th><th>Tipo</th><th>Solicitante</th><th>CID</th><th>Observação</th><th>Status</th><th></th></tr></thead><tbody>
+  ${list.length?list.map(d=>{const p=pac(d.pac); return `<tr><td>${d.id}</td><td>${br(d.data)}</td><td>${d.prio?'<b style="color:#c0282d">SIM</b>':'—'}</td>
+    <td>${p?esc(p.nome):'?'}</td><td>${d.esp}</td><td>${d.tipoCons||''}</td><td>${esc(d.solic)}</td><td>${esc(d.cid)}</td><td>${esc(d.obs)}</td>
+    <td><span class="st ${d.st}">${d.st.toUpperCase()}</span></td>
+    <td>${d.st==='pendente'?`<button class="btn" data-act="demAgendar" data-id="${d.id}">Agendar</button> <button class="btn" data-act="demDevolver" data-id="${d.id}">${ICON.x}</button>`:''}</td></tr>`}).join('')
+    :`<tr><td colspan="11" class="empty">Nenhuma demanda.</td></tr>`}
+  </tbody></table>`;
+}
+
+/* ===================== Tabelas de agendamento ===================== */
+function apptTable(list, actions){
+  if(!list.length) return `<div class="empty">Nenhum agendamento.</div>`;
+  return `<table class="g"><thead><tr><th>Data</th><th>Hora</th><th>Paciente</th><th>Profissional</th><th>Especialidade</th><th>Tipo</th><th>Chegada</th><th>Status</th>${actions?'<th class="noprint">Ações</th>':''}</tr></thead><tbody>
+  ${list.map(a=>{const p=pac(a.pac), pr=prof(a.prof); return `<tr><td>${br(a.data)}</td><td>${a.hora}</td><td>${p?p.id+' - '+esc(p.nome):'?'}</td><td>${pr.nome}</td><td>${pr.esp}</td><td>${a.tipo}</td><td>${a.chegada||''}</td>
+    <td><span class="st ${a.st}">${a.st.toUpperCase()}</span></td>${actions?`<td class="noprint">${actions(a)}</td>`:''}</tr>`}).join('')}
+  </tbody></table>`;
+}
+
+function vDiaria(){
+  const D=UI.diaria;
+  const list=S.appts.filter(a=>a.data===D.data && (!D.prof||a.prof==D.prof)).sort((a,b)=>(prof(a.prof).nome+a.hora).localeCompare(prof(b.prof).nome+b.hora));
+  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Agenda Diária</span></div></div>
+  <div class="row noprint" data-filter="diaria">
+    ${fld('Data', inp('data', D.data, 130, 'date'))}
+    ${fld('Profissional', sel('prof', PROFS.map(p=>({v:p.id,l:p.nome+' — '+p.esp})), D.prof, 'Todos'))}
+    ${btn('Imprimir','print','print')}
+  </div>
+  <p><b>${UNIDADE}</b> — ${br(D.data)} — ${list.length} agendamento(s)</p>
+  ${apptTable(list, a=> a.st==='agendado'?`<button class="btn" data-act="cancelar" data-id="${a.id}">${ICON.x}Cancelar</button>`:'')}`;
+}
+
+function vRecepcao(){
+  const t=today();
+  const list=S.appts.filter(a=>a.data===t && a.st!=='cancelado').sort((a,b)=>a.hora.localeCompare(b.hora));
+  const pres=list.filter(a=>a.st==='presente').length;
+  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Recepção — ${br(t)}</span></div><div class="pathead">${pres} de ${list.length} pacientes presentes</div></div>
+  ${apptTable(list, a=> a.st==='agendado'
+     ? `<button class="btn pri" data-act="chegada" data-id="${a.id}">${ICON.ok}Registrar chegada</button> <button class="btn" data-act="ausente" data-id="${a.id}">${ICON.x}Ausente</button>`
+     : a.st==='presente'?`<button class="btn" data-act="desfazer" data-id="${a.id}">Desfazer</button>`:'')}`;
+}
+
+function vAusentes(){
+  const t=today();
+  const list=S.appts.filter(a=>(a.data<t && a.st==='agendado')||a.st==='ausente').sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora));
+  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Ausentes</span></div></div>
+  <p class="hint">Pacientes que não compareceram (agendamentos passados sem chegada registrada).</p>
+  ${apptTable(list, a=>`${a.st==='agendado'?`<button class="btn" data-act="ausente" data-id="${a.id}">Confirmar ausência</button> `:''}<button class="btn pri" data-act="reagendar" data-id="${a.id}">Reagendar</button>`)}`;
+}
+
+function vPacientes(){
+  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Cadastro de Paciente</span></div></div>
+  ${patSearch('pac', UI.pacientes, true)}
+  <p class="hint">Clique em um paciente para editar.</p>`;
+}
+
+function vProfissionais(){
+  const nomes=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Agenda dos Profissionais</span></div></div>
+  <table class="g"><thead><tr><th>Profissional</th><th>Especialidade</th><th>Dias de atendimento</th><th>Horários</th><th>Agendados (próx. 30 dias)</th></tr></thead><tbody>
+  ${PROFS.map(p=>{const t=today(), lim=addDays(t,30); const n=S.appts.filter(a=>a.prof===p.id&&a.data>=t&&a.data<=lim&&a.st!=='cancelado').length;
+    return `<tr><td>${p.nome}</td><td>${p.esp}</td><td>${p.dias.map(d=>nomes[d]).join(', ')}</td><td>${SLOTS[0]} às 11:00 (${SLOTS.length} vagas/dia)</td><td>${n}</td></tr>`}).join('')}
+  </tbody></table>`;
+}
+
+function vConsulta(){
+  const st=UI.cons||(UI.cons={q:{},pac:null});
+  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Consulta de Agendamentos</span></div><div class="pathead">${pacHeader(st.pac)}</div></div>
+  ${patSearch('cons', st, false)}
+  ${st.pac?`<div class="sect">Histórico</div>`+apptTable(S.appts.filter(a=>a.pac==st.pac).sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora)),false):''}`;
+}
+
+function vRelatorio(){
+  const R=UI.rel||(UI.rel={de:addDays(today(),-7), ate:addDays(today(),7)});
+  const list=S.appts.filter(a=>a.data>=R.de&&a.data<=R.ate);
+  const by={}; list.forEach(a=>{const e=prof(a.prof).esp; by[e]=by[e]||{agendado:0,presente:0,ausente:0,cancelado:0}; by[e][a.st]++;});
+  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Agendamentos por Período</span></div></div>
+  <div class="row noprint" data-filter="rel">${fld('De', inp('de',R.de,130,'date'))}${fld('Até', inp('ate',R.ate,130,'date'))}${btn('Imprimir','print','print')}</div>
+  <table class="g"><thead><tr><th>Especialidade</th><th>Agendados</th><th>Presentes</th><th>Ausentes</th><th>Cancelados</th><th>Total</th><th>Absenteísmo</th></tr></thead><tbody>
+  ${Object.keys(by).sort().map(e=>{const x=by[e], tot=x.agendado+x.presente+x.ausente+x.cancelado, ab=x.presente+x.ausente?Math.round(x.ausente*100/(x.presente+x.ausente)):0;
+    return `<tr><td>${e}</td><td>${x.agendado}</td><td>${x.presente}</td><td>${x.ausente}</td><td>${x.cancelado}</td><td><b>${tot}</b></td><td>${ab}%</td></tr>`}).join('')||'<tr><td colspan="7" class="empty">Sem dados.</td></tr>'}
+  </tbody></table>`;
+}
+
+function vPlaceholder(t){
+  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">${t}</span></div></div>
+  <div class="empty" style="padding:60px">Tela não implementada nesta demonstração.</div>`;
+}
+
+/* ===================== Render / roteamento ===================== */
+const TITLES={extra:'Agendamento Extra',troca:'Troca de Paciente',solicitacoes:'Solicitações',judicial:'Ação Judicial',contato:'Fale Conosco / Help Desk'};
+function render(){
+  const v=UI.view;
+  $('#app').innerHTML =
+    v==='agenda'?vAgenda(): v==='demanda'?vDemanda(): v==='diaria'?vDiaria(): v==='recepcao'?vRecepcao():
+    v==='ausentes'?vAusentes(): v==='pacientes'?vPacientes(): v==='profissionais'?vProfissionais():
+    v==='consulta'?vConsulta(): v==='relatorio'?vRelatorio(): vPlaceholder(TITLES[v]||v);
+  document.querySelectorAll('.unidade').forEach(e=>e.textContent=UNIDADE);
+}
+function go(v){
+  if(v==='reset'){ if(confirm('Restaurar os dados de exemplo? Tudo que foi cadastrado será apagado.')){ S=seed(); save(); toast('Dados restaurados.'); } v='agenda'; }
+  UI.view=v; render(); window.scrollTo(0,0);
+}
+
+/* ===================== Modal paciente ===================== */
+function openPacModal(p, onSaved){
+  const isNew=!p; p=p||{nome:'',social:'',nasc:'',mae:'',cpf:'',cns:'',rg:'',pront:'',fone:''};
+  const ov=document.createElement('div'); ov.className='ov';
+  ov.innerHTML=`<div class="modal"><h3>${isNew?'Novo paciente':'Editar paciente — '+p.id}<span data-x>✕</span></h3>
+    <form class="mb">
+      <div class="row">${fld('Nome *',inp('nome',p.nome,420))}${fld('Nome Social',inp('social',p.social,220))}</div>
+      <div class="row">${fld('Nascimento *',inp('nasc',p.nasc,140,'date'))}${fld('CPF',inp('cpf',p.cpf,120))}${fld('CNS',inp('cns',p.cns,150))}${fld('RG',inp('rg',p.rg,110))}</div>
+      <div class="row">${fld('Filiação 1 *',inp('mae',p.mae,360))}${fld('Prontuário',inp('pront',p.pront,100))}${fld('Telefone',inp('fone',p.fone,130))}</div>
+    </form>
+    <div class="mf"><button class="btn" data-x>Cancelar</button><button class="btn pri" data-save>${ICON.ok}Salvar</button></div></div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{
+    if(e.target.closest('[data-x]')||e.target===ov) ov.remove();
+    if(e.target.closest('[data-save]')){
+      const d=Object.fromEntries(new FormData(ov.querySelector('form')));
+      d.nome=d.nome.trim().toUpperCase(); d.mae=d.mae.trim().toUpperCase(); d.social=d.social.trim().toUpperCase();
+      if(!d.nome||!d.nasc||!d.mae) return toast('Preencha Nome, Nascimento e Filiação.', true);
+      if(isNew){ d.id=S.nextPac++; S.patients.push(d); } else Object.assign(p,d);
+      save(); ov.remove(); toast(isNew?'Paciente cadastrado: '+d.id:'Paciente atualizado.'); onSaved&&onSaved(isNew?d:p);
+    }
+  });
+  ov.querySelector('input').focus();
+}
+
+/* ===================== Eventos ===================== */
+// preserva o que já foi digitado no formulário de demanda antes de redesenhar a tela
+function keepDemForm(){ const f=$('#demForm'); if(f) UI.dem.form=Object.fromEntries(new FormData(f)); }
+document.addEventListener('click', e=>{
+  const t=e.target;
+  const g=t.closest('[data-go]'); if(g){ go(g.dataset.go); return; }
+
+  const at=t.closest('[data-agtab]');
+  if(at){ if(at.dataset.agtab!=='paciente' && !UI.ag.pac) return toast('Selecione um paciente primeiro.', true); UI.ag.tab=at.dataset.agtab; return render(); }
+  const dt=t.closest('[data-demtab]'); if(dt){ keepDemForm(); UI.dem.tab=dt.dataset.demtab; return render(); }
+
+  const pk=t.closest('[data-pick]');
+  if(pk){
+    const id=+pk.dataset.id, ctx=pk.dataset.pick;
+    if(ctx==='ag'){ UI.ag.pac=id; UI.ag.tab='selecao'; }
+    if(ctx==='dem'){ keepDemForm(); UI.dem.pac=id; }
+    if(ctx==='cons'){ UI.cons.pac=id; }
+    if(ctx==='pac'){ return openPacModal(pac(id), ()=>render()); }
+    return render();
+  }
+
+  const mo=t.closest('[data-mes]'); if(mo){ UI.ag.mes=+mo.dataset.mes; UI.ag.dia=null; return render(); }
+  const dy=t.closest('[data-day]'); if(dy){ UI.ag.dia=dy.dataset.day; return render(); }
+
+  const b=t.closest('[data-act]'); if(!b) return;
+  const act=b.dataset.act, id=+b.dataset.id;
+  const ap = () => S.appts.find(a=>a.id===id);
+  switch(act){
+    case 'novoPac': {
+      const ctx = UI.view==='demanda'?'dem':UI.view==='agenda'?'ag':'pac';
+      openPacModal(null, p=>{ if(ctx==='ag'){UI.ag.pac=p.id; UI.ag.tab='selecao';} if(ctx==='dem') UI.dem.pac=p.id; UI.pacientes.q={}; render(); });
+      break; }
+    case 'goInterna': UI.ag.tab='interna'; render(); break;
+    case 'limparAg': Object.assign(UI.ag,{retorno:false,inter:false,profNome:'',esp:'',dia:null,obs:''}); render(); break;
+    case 'agendar': {
+      const pid=+b.dataset.prof, row=b.closest('tr');
+      const hora=row.querySelector(`[name=hora_${pid}]`).value, tipo=row.querySelector(`[name=tipo_${pid}]`).value;
+      const obs=($('[name=obs]')||{}).value||'';
+      if(S.appts.some(a=>a.pac==UI.ag.pac&&a.data===UI.ag.dia&&a.st!=='cancelado'&&prof(a.prof).esp===prof(pid).esp))
+        if(!confirm('O paciente já possui agendamento nesta especialidade neste dia. Continuar?')) return;
+      S.appts.push({id:S.nextAppt++, pac:UI.ag.pac, prof:pid, data:UI.ag.dia, hora, tipo, st:'agendado', obs, unidade:UNIDADE, chegada:''});
+      save(); toast(`Agendado: ${br(UI.ag.dia)} às ${hora} com ${prof(pid).nome}`); UI.ag.obs=''; render(); break; }
+    case 'solicitarExt': {
+      if(!UI.ag.esp) return toast('Selecione a especialidade.', true);
+      const u=UNID_EXT[+b.dataset.u];
+      S.demandas.push({id:S.nextDem++, tipo:'Consulta', esp:UI.ag.esp, pac:UI.ag.pac, data:today(), prio:false, origem:'Ambulatório', doc:'', solic:'', tipoCons:UI.ag.tipo, obs:'Agenda externa: '+u.nome, st:'pendente', unidInd:u.nome, tele:'Não', cid:''});
+      save(); toast('Solicitação enviada para '+u.nome); break; }
+    case 'inserirDem': {
+      const F=Object.fromEntries(new FormData($('#demForm'))); F.prio=!!F.prio;
+      if(!F.esp||!F.tipoCons||!F.st) { UI.dem.form=F; return toast('Preencha os campos obrigatórios (*).', true); }
+      if(!UI.dem.pac) { UI.dem.form=F; return toast('Selecione o paciente.', true); }
+      S.demandas.push({...F, id:S.nextDem++, pac:UI.dem.pac, data:today()});
+      save(); UI.dem.form={}; UI.dem.pac=null; UI.dem.q={}; toast('Demanda inserida com sucesso.'); UI.dem.tab='listar'; render(); break; }
+    case 'demAgendar': {
+      const d=S.demandas.find(x=>x.id===id); d.st='agendada'; save();
+      Object.assign(UI.ag,{pac:d.pac, esp:d.esp, tab:'interna', dia:null, mes:1, tipo:d.tipoCons||'Primeira Vez'}); go('agenda'); break; }
+    case 'demDevolver': { const d=S.demandas.find(x=>x.id===id); if(confirm('Devolver demanda nº '+id+'?')){ d.st='devolvida'; save(); render(); } break; }
+    case 'chegada': { const a=ap(); a.st='presente'; const n=new Date(); a.chegada=pad(n.getHours())+':'+pad(n.getMinutes()); save(); toast('Chegada registrada.'); render(); break; }
+    case 'desfazer': { const a=ap(); a.st='agendado'; a.chegada=''; save(); render(); break; }
+    case 'ausente': { ap().st='ausente'; save(); render(); break; }
+    case 'cancelar': { if(confirm('Cancelar este agendamento?')){ ap().st='cancelado'; save(); render(); } break; }
+    case 'reagendar': { const a=ap(); Object.assign(UI.ag,{pac:a.pac, esp:prof(a.prof).esp, tab:'interna', dia:null, mes:1, tipo:'Retorno'}); go('agenda'); break; }
+    case 'print': window.print(); break;
+  }
+});
+
+document.addEventListener('submit', e=>{
+  const f=e.target.closest('[data-search]'); if(!f) return;
+  e.preventDefault();
+  const q=Object.fromEntries(new FormData(f));
+  const ctx=f.dataset.search;
+  const st = ctx==='ag'?UI.ag: ctx==='dem'?UI.dem: ctx==='cons'?UI.cons: UI.pacientes;
+  if(ctx==='dem') keepDemForm();
+  st.q=q; render();
+});
+
+document.addEventListener('change', e=>{
+  const t=e.target, n=t.name;
+  if(UI.view==='agenda'){
+    const A=UI.ag;
+    if(n==='esp'){ A.esp=t.value; A.dia=null; return render(); }
+    if(n==='tipo'){ A.tipo=t.value; return; }
+    if(n==='retorno'){ A.retorno=t.checked; if(t.checked) A.inter=false; return render(); }
+    if(n==='inter'){ A.inter=t.checked; if(t.checked) A.retorno=false; return render(); }
+    if(n==='profNome'){ A.profNome=t.value; A.dia=null; return render(); }
+    if(n==='obs'){ A.obs=t.value; return; }
+  }
+  const fl=t.closest('[data-filter]'); if(!fl) return;
+  const k=fl.dataset.filter;
+  if(k==='dem') UI.dem.filtro[n]=t.value;
+  if(k==='diaria') UI.diaria[n]=t.value;
+  if(k==='rel') UI.rel[n]=t.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
