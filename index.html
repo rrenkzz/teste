@@ -3,708 +3,1439 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Regulação Ambulatorial</title>
+<title>Central de Regulação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --navy:#1f3f75; --navy2:#16305c; --blue:#2d5f9a; --blue-l:#6fa0d6;
-    --bg:#f7f3f7; --line:#c9cbd2; --txt:#222; --muted:#555; --th:#8a8f96;
-    --row:#eef0f4; --row2:#f8f9fb; --hl:#f2e33a; --red:#c0282d;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{min-height:100vh}
-  html{scroll-padding-bottom:64px}
-  body{font-family:Verdana,Tahoma,Arial,sans-serif;font-size:11px;color:var(--txt);background:var(--bg);padding-bottom:60px}
-  a{color:inherit}
+:root{
+  --bg:#f4f6fa; --surface:#fff; --surface-2:#f8fafc; --border:#e3e8ef; --border-2:#d3dae4;
+  --text:#0f172a; --text-2:#334155; --muted:#64748b;
+  --primary:#1d4ed8; --primary-600:#1e40af; --primary-50:#eef3ff; --primary-100:#dbe6ff;
+  --side:#0f1e3d; --side-2:#16284f; --side-text:#c4cee3; --side-muted:#7f8db0;
+  --success:#15803d; --success-bg:#e9f8ef; --warn:#b45309; --warn-bg:#fff5e5;
+  --danger:#b42318; --danger-bg:#fdeceb; --info:#0b62a8; --info-bg:#eaf4fd; --neutral:#475569; --neutral-bg:#eef1f5;
+  --shadow:0 1px 2px rgba(15,23,42,.05),0 1px 3px rgba(15,23,42,.06);
+  --shadow-lg:0 20px 50px rgba(15,23,42,.18);
+  --r:12px; --r-sm:8px;
+}
+:root[data-theme=dark]{
+  --bg:#0a1020; --surface:#111a2e; --surface-2:#0e1628; --border:#1f2b44; --border-2:#2a3858;
+  --text:#e7ecf6; --text-2:#c2cbdc; --muted:#8a97b0;
+  --primary:#6e9bff; --primary-600:#8fb1ff; --primary-50:#152445; --primary-100:#1c2f5a;
+  --side:#0b1428; --side-2:#13203e;
+  --success:#4ade80; --success-bg:#0f2a1c; --warn:#fbbf24; --warn-bg:#2d220b; --danger:#f87171; --danger-bg:#2e1414;
+  --info:#60a5fa; --info-bg:#0f2240; --neutral:#a3b0c6; --neutral-bg:#1a2438;
+  --shadow:0 1px 2px rgba(0,0,0,.3); --shadow-lg:0 20px 50px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.45;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.01em}
+.i{flex:none;display:inline-block;vertical-align:middle}
+.hide{display:none!important}
+.muted{color:var(--muted)} .small{font-size:12.5px} .strong{font-weight:600} .mono{font-variant-numeric:tabular-nums}
 
-  /* Cabeçalho */
-  header{display:flex;height:72px;background:linear-gradient(90deg,#1d4f92 0%,#2f6db5 45%,#7aa8dc 100%)}
-  .brand{background:#fff;display:flex;align-items:center;gap:8px;padding:0 18px 0 10px;border-bottom-right-radius:28px;min-width:300px}
-  .brand svg{flex:none}
-  .brand small{display:block;color:var(--red);font-weight:bold;font-size:11px}
-  .brand b{display:block;font-family:Arial,sans-serif;font-size:22px;color:#333;letter-spacing:-.3px}
-  .hright{flex:1;display:flex;flex-direction:column;justify-content:space-between}
-  .htitle{color:#fff;text-align:center;font-weight:bold;font-size:14px;letter-spacing:1px;line-height:17px;padding-top:6px;text-shadow:1px 1px 2px #0005}
-  .hinfo{background:linear-gradient(#f4f4f6,#dfe3ea);margin-right:40px;border-top-right-radius:12px;display:flex;justify-content:space-around;padding:3px 10px;color:#444;font-family:Georgia,serif;font-size:11px}
+/* ---------- Layout ---------- */
+.app{display:grid;grid-template-columns:256px 1fr;min-height:100vh}
+.side{background:var(--side);color:var(--side-text);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto}
+.brand{display:flex;gap:10px;align-items:center;padding:20px 18px 16px}
+.brand .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b6ef5,#1d3fb0);display:grid;place-items:center;flex:none}
+.brand b{display:block;color:#fff;font-size:15px}
+.brand span{font-size:11.5px;color:var(--side-muted)}
+.unit{margin:0 14px 10px;padding:10px 12px;border-radius:10px;background:var(--side-2);font-size:12px}
+.unit small{display:block;color:var(--side-muted);font-size:11px}
+.unit b{color:#fff;font-weight:600}
+.nav{padding:4px 10px 10px;flex:1}
+.nav-g{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--side-muted);padding:14px 10px 6px;font-weight:600}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--side-text);text-decoration:none;cursor:pointer;font-weight:500;font-size:13.5px}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav a.on{background:#2450c9;color:#fff}
+.nav a .cnt{margin-left:auto;font-size:11px;background:rgba(255,255,255,.12);color:#fff;border-radius:99px;padding:1px 7px;font-weight:600}
+.nav a .cnt.alert{background:#e5484d}
+.side-f{padding:14px 18px;font-size:11.5px;color:var(--side-muted);border-top:1px solid rgba(255,255,255,.07)}
+.side-f button{background:none;border:0;color:var(--side-text);text-decoration:underline;cursor:pointer;padding:0;font-size:11.5px}
 
-  /* Menu */
-  nav{background:var(--navy);display:flex;justify-content:space-between;height:24px;position:relative;z-index:20}
-  nav ul{list-style:none;margin:0;padding:0;display:flex}
-  nav>ul>li{position:relative}
-  nav>ul>li>span{display:block;color:#fff;font-weight:bold;font-size:12px;padding:5px 13px;cursor:pointer;white-space:nowrap}
-  nav>ul>li:hover>span{background:#2b528f}
-  nav .dd{display:none;position:absolute;top:24px;left:0;background:var(--navy);min-width:210px;border:1px solid #fff;flex-direction:column}
-  nav>ul>li:hover .dd{display:flex}
-  nav .dd li{color:#fff;font-weight:bold;font-size:12px;padding:4px 12px;border-bottom:1px solid #fff;cursor:pointer;white-space:nowrap}
-  nav .dd li:last-child{border-bottom:0}
-  nav .dd li:hover{background:#3a6bb5}
-  .nright{display:flex;align-items:center;gap:22px;color:#fff;font-weight:bold;font-size:12px;padding-right:12px}
-  .nright span{cursor:pointer}
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:30;height:64px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 24px}
+.top .crumb{font-size:12px;color:var(--muted)}
+.top h2{font-size:16px}
+.gsearch{position:relative;margin-left:auto;width:min(380px,40vw)}
+.gsearch input{width:100%;height:38px;border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:0 60px 0 36px}
+.gsearch input:focus{outline:2px solid var(--primary-100);border-color:var(--primary)}
+.gsearch .i{position:absolute;left:11px;top:10px;color:var(--muted)}
+.gsearch kbd{position:absolute;right:9px;top:9px;font:11px Inter,sans-serif;border:1px solid var(--border-2);border-radius:5px;padding:1px 5px;color:var(--muted);background:var(--surface)}
+.dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;z-index:40;max-height:420px;overflow:auto}
+.dropdown .dd-h{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:8px 10px 4px;font-weight:600}
+.dd-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+.dd-item:hover,.dd-item.act{background:var(--primary-50)}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--text-2);position:relative;flex:none}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn:disabled{opacity:.4;cursor:default}
+.icon-btn .dot{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:99px;background:#e5484d;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px;border:2px solid var(--surface)}
+.user{display:flex;align-items:center;gap:10px;padding-left:6px}
+.user b{display:block;font-size:13px}.user span{font-size:11.5px;color:var(--muted)}
+.menu-btn{display:none}
+.bell-wrap{position:relative}
+.bell-wrap .dropdown{left:auto;right:0;width:340px}
 
-  main{padding:8px 12px}
+.view{padding:24px;max-width:1360px;width:100%;margin:0 auto}
+.page-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.page-h h1{font-size:22px}
+.page-h p{margin:4px 0 0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
-  /* Abas */
-  .tabsrow{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--line);margin-bottom:10px}
-  .tabs{display:flex;gap:2px}
-  .tab{padding:5px 0;width:160px;text-align:center;font-size:12px;color:#555;background:linear-gradient(#f2f2f4,#dcdde2);clip-path:polygon(8% 0,100% 0,100% 100%,0 100%);cursor:pointer;user-select:none}
-  .tab.on{background:linear-gradient(#3b74b4,#24528b);color:#fff;font-weight:bold}
-  .tab.dis{opacity:.45;cursor:not-allowed}
-  .pathead{font-size:11px;color:#333;padding-bottom:4px}
-  .screen-title{font-weight:bold;color:var(--navy);font-size:13px;margin-right:16px}
+/* ---------- Componentes ---------- */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border)}
+.card-h h3{font-size:15px}
+.card-h p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.card-b{padding:16px 18px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:3fr 2fr}.g3{grid-template-columns:repeat(3,1fr)}.g-eq{grid-template-columns:1fr 1fr}
+.stack{display:flex;flex-direction:column;gap:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:16px}
+.kpi{padding:16px 18px}
+.kpi .lbl{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;font-weight:500}
+.kpi .lbl .ico{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--primary-50);color:var(--primary)}
+.kpi .val{font-size:28px;font-weight:700;margin-top:10px;letter-spacing:-.02em}
+.kpi .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
 
-  /* Formulários */
-  .row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:flex-end;margin-bottom:8px}
-  .f{display:flex;flex-direction:column}
-  .f label{color:var(--muted);font-size:11px;margin-bottom:1px}
-  input[type=text],input[type=date],input[type=time],select,textarea{font:11px Verdana,Tahoma,sans-serif;border:1px solid #cfd2d8;background:#fbfbfd;padding:2px 4px;height:20px}
-  textarea{height:auto}
-  input:focus,select:focus,textarea:focus{outline:1px solid #6fa0d6;background:#fff}
-  .btn{font:11px Verdana,sans-serif;background:linear-gradient(#fff,#e2e3e8);border:1px solid #9a9ea8;padding:2px 12px 2px 8px;height:22px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
-  .btn:hover{background:linear-gradient(#fff,#d2d6df)}
-  .btn.pri{border-color:#2d5f9a;color:#1d4b85;font-weight:bold}
-  .ico{width:13px;height:13px;display:inline-block}
-  fieldset{border:1px solid #d3d5db;padding:6px 8px;margin:0 0 8px}
-  .chk{display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 14px;border-radius:9px;border:1px solid var(--border-2);background:var(--surface);color:var(--text);font-weight:600;font-size:13.5px;cursor:pointer;white-space:nowrap;transition:background .12s,border-color .12s}
+.btn:hover{background:var(--surface-2);border-color:var(--muted)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+:root[data-theme=dark] .btn.primary{color:#0a1020}
+.btn.primary:hover{background:var(--primary-600);border-color:var(--primary-600)}
+.btn.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
+.btn.danger:hover{background:var(--danger-bg)}
+.btn.ghost{border-color:transparent;background:none}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.sm{height:30px;padding:0 10px;font-size:12.5px;border-radius:7px}
+.btn.lg{height:44px;padding:0 20px;font-size:14.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ok{background:var(--success);border-color:var(--success);color:#fff}
+.btn.ok:hover{filter:brightness(.95);background:var(--success)}
+:root[data-theme=dark] .btn.ok{color:#0a1020}
 
-  /* Tabelas */
-  table.g{width:100%;border-collapse:collapse;margin:6px 0}
-  table.g th{background:linear-gradient(#9a9fa6,#7f848b);color:#fff;text-align:left;font-size:10px;padding:3px 5px;border-right:1px solid #fff}
-  table.g td{padding:4px 5px;border-bottom:1px solid #fff;font-size:11px}
-  table.g tr:nth-child(odd) td{background:var(--row)}
-  table.g tr:nth-child(even) td{background:var(--row2)}
-  table.g tr.sel td{background:#d9e6f7}
-  table.g tr.click{cursor:pointer}
-  table.g tr.click:hover td{background:#e3ecf8}
-  .empty{color:#777;padding:14px;text-align:center}
-  .st{display:inline-block;padding:1px 6px;border-radius:2px;font-size:10px;font-weight:bold;color:#fff}
-  .st.agendado{background:#2d5f9a}.st.presente{background:#2e8540}.st.ausente{background:#c0282d}.st.cancelado{background:#888}
-  .st.pendente{background:#d08a00}.st.agendada{background:#2e8540}.st.devolvida{background:#888}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label{font-size:12.5px;font-weight:600;color:var(--text-2)}
+.field>label em{color:var(--danger);font-style:normal}
+.input,.select,.textarea{width:100%;height:40px;border:1px solid var(--border-2);border-radius:9px;background:var(--surface);padding:0 12px;transition:border-color .12s,box-shadow .12s}
+.textarea{height:auto;min-height:84px;padding:10px 12px;resize:vertical}
+.input:focus,.select:focus,.textarea:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-100)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 16px}
+.form-grid .full{grid-column:1/-1}
+.form-sec{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;grid-column:1/-1;padding-top:12px;border-top:1px solid var(--border);margin-top:4px}
+.form-sec:first-child{border:0;padding:0;margin:0}
+.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-weight:500;height:40px}
+.switch input{appearance:none;width:38px;height:22px;border-radius:99px;background:var(--border-2);position:relative;cursor:pointer;transition:.15s;margin:0}
+.switch input::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s}
+.switch input:checked{background:var(--primary)}
+.switch input:checked::after{left:19px}
+.search{position:relative;flex:1;min-width:200px;max-width:380px}
+.search .i{position:absolute;left:12px;top:11px;color:var(--muted)}
+.search .input{padding-left:38px}
 
-  /* Calendário */
-  .months{display:flex;gap:2px;margin-top:6px}
-  .month{padding:3px 0;width:135px;text-align:center;font-size:12px;background:linear-gradient(#f4f4f6,#e0e1e6);clip-path:polygon(7% 0,100% 0,100% 100%,0 100%);cursor:pointer}
-  .month.on{background:linear-gradient(#3b74b4,#24528b);color:#fff;font-weight:bold}
-  .days{display:grid;grid-auto-flow:column;grid-template-rows:auto auto;border:1px solid var(--line);border-top:2px solid var(--blue);overflow-x:auto}
-  .days div{text-align:center;padding:4px 0;min-width:30px;border-right:1px solid #e1e2e6;font-size:11px}
-  .days .wd{color:#2d5f9a;font-weight:bold;border-bottom:1px solid #e1e2e6}
-  .days .wd.we{color:var(--red)}
-  .days .d{cursor:pointer;color:#222}
-  .days .d:hover{background:#e3ecf8}
-  .days .d.off{color:#bbb;cursor:default;background:none}
-  .days .d.full{color:#c77;cursor:default}
-  .days .d.today{font-weight:bold;text-decoration:underline}
-  .days .d.on{background:var(--hl)}
-  .sect{color:var(--navy);font-weight:bold;font-size:13px;border-bottom:1px solid var(--line);margin:12px 0 4px;padding-bottom:2px}
+.seg{display:inline-flex;background:var(--neutral-bg);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:6px 12px;border-radius:8px;font-weight:600;font-size:13px;color:var(--muted);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.seg .n{font-size:11px;background:var(--border);border-radius:99px;padding:0 6px;color:var(--text-2)}
+.seg button.on .n{background:var(--primary-50);color:var(--primary)}
 
-  /* Rodapé */
-  footer{position:fixed;left:0;right:0;bottom:0;font-size:11px;color:#fff;z-index:10}
-  .fav{background:var(--navy);padding:3px 10px;display:flex;gap:16px;align-items:center}
-  .fav a{font-weight:bold;cursor:pointer;text-decoration:underline}
-  .fav .arr{letter-spacing:-3px;font-weight:bold;color:#9cc0ec}
-  .fbar{background:var(--navy2);padding:3px 10px;display:flex;justify-content:space-between;font-weight:bold}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge.info{background:var(--info-bg);color:var(--info)}.badge.success{background:var(--success-bg);color:var(--success)}
+.badge.warn{background:var(--warn-bg);color:var(--warn)}.badge.danger{background:var(--danger-bg);color:var(--danger)}
+.badge.neutral{background:var(--neutral-bg);color:var(--neutral)}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:6px;background:var(--neutral-bg);color:var(--text-2);white-space:nowrap}
+.tag.prio{background:var(--danger-bg);color:var(--danger)}
+.tag.blue{background:var(--primary-50);color:var(--primary)}
 
-  /* Modal / aviso */
-  .ov{position:fixed;inset:0;background:#0005;display:flex;align-items:center;justify-content:center;z-index:50}
-  .modal{background:#fff;border:1px solid var(--navy);width:min(720px,94vw);max-height:90vh;overflow:auto;box-shadow:0 6px 30px #0006}
-  .modal h3{margin:0;background:var(--navy);color:#fff;font-size:12px;padding:6px 10px;display:flex;justify-content:space-between}
-  .modal h3 span{cursor:pointer}
-  .modal .mb{padding:10px}
-  .modal .mf{padding:8px 10px;border-top:1px solid #ddd;display:flex;justify-content:flex-end;gap:6px}
-  #toast{position:fixed;top:110px;left:50%;transform:translateX(-50%);background:#fffbe0;border:1px solid #d6b800;color:#333;padding:8px 18px;font-size:12px;display:none;z-index:60;box-shadow:0 3px 12px #0003}
-  #toast.err{background:#fde8e8;border-color:var(--red)}
-  .right{display:flex;justify-content:flex-end;gap:6px}
-  .hint{color:#777;font-size:10px}
+.table-wrap{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse}
+.t th{text-align:left;font-size:12px;font-weight:600;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface-2);white-space:nowrap}
+.t td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.t tr:last-child td{border-bottom:0}
+.t tbody tr:hover td{background:var(--surface-2)}
+.t tr.click{cursor:pointer}
+.t .r{text-align:right}
+.t td.act{text-align:right;white-space:nowrap}
+.t td.act .btn+.btn{margin-left:6px}
+.who{display:flex;align-items:center;gap:10px;min-width:0}
+.who b{display:block;font-weight:600}
+.who span{display:block;font-size:12px;color:var(--muted)}
+.t .who b,.t .who span{white-space:nowrap}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--primary-50);color:var(--primary);display:grid;place-items:center;font-weight:700;font-size:12.5px;flex:none}
+.avatar.lg{width:52px;height:52px;font-size:17px}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+.empty .i{color:var(--border-2);margin-bottom:8px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--border)}
+.toolbar .sp{flex:1}
 
-  @media (max-width:760px){
-    header{height:auto;flex-direction:column}
-    .brand{min-width:0;border-radius:0}
-    .hinfo{margin:0;flex-wrap:wrap;gap:4px}
-    nav{height:auto;flex-wrap:wrap}
-    nav ul{flex-wrap:wrap}
-    .nright{display:none}
-    .tab{width:auto;padding:5px 14px}
-    .fbar span:first-child{display:none}
-  }
-  @media print{header,nav,footer,.noprint{display:none!important}body{background:#fff;padding:0}}
+.list-row{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer;text-align:left;transition:.12s}
+.list-row:hover{border-color:var(--primary);background:var(--primary-50)}
+.list-row.on{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-100)}
+.list-row .grow{flex:1;min-width:0}
+.list{display:flex;flex-direction:column;gap:8px}
+.feed{list-style:none;margin:0;padding:0}
+.feed li{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.feed li:last-child{border:0}
+.feed .dot{width:8px;height:8px;border-radius:50%;background:var(--primary);margin-top:6px;flex:none}
+.bar{height:8px;background:var(--neutral-bg);border-radius:99px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.hbar{display:grid;grid-template-columns:150px 1fr 48px;gap:10px;align-items:center;padding:7px 0;font-size:13px}
+.hbar>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+.banner{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--primary-50);color:var(--primary);font-weight:500;margin-bottom:16px;border:1px solid var(--primary-100)}
+.banner.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.dl{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 18px;margin:0}
+.dl div{min-width:0}
+.dl dt{font-size:12px;color:var(--muted);font-weight:500}
+.dl dd{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
+.dl .full{grid-column:1/-1}
+
+/* Assistente de agendamento */
+.stepper{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:10px;flex:1;min-width:150px;padding:12px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-weight:600;font-size:13px}
+.step .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--neutral-bg);font-size:12.5px;flex:none}
+.step.on{border-color:var(--primary);color:var(--text)}
+.step.on .n{background:var(--primary);color:#fff}
+.step.done{cursor:pointer;color:var(--text-2)}
+.step.done .n{background:var(--success-bg);color:var(--success)}
+.wiz{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+.summary{position:sticky;top:84px}
+.summary .dl{grid-template-columns:1fr}
+.esp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.esp{border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;background:var(--surface);text-align:left;transition:.12s}
+.esp:hover{border-color:var(--primary)}
+.esp.on{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-100);background:var(--primary-50)}
+.esp b{display:block;font-size:14px;margin-bottom:2px}
+.esp span{font-size:12.5px;color:var(--muted)}
+.esp .free{color:var(--success);font-weight:600}
+.esp .none{color:var(--danger);font-weight:600}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .wd{text-align:center;font-size:11.5px;font-weight:600;color:var(--muted);padding:4px 0}
+.cal .d{aspect-ratio:1/0.82;border:1px solid var(--border);border-radius:9px;background:var(--surface);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:600;padding:0}
+.cal .d small{font-size:10.5px;font-weight:600;color:var(--success)}
+.cal .d:hover:not(:disabled){border-color:var(--primary)}
+.cal .d:disabled{background:var(--surface-2);color:var(--border-2);cursor:default;border-color:transparent}
+.cal .d.today{outline:2px dashed var(--primary-100)}
+.cal .d.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.cal .d.few small{color:var(--warn)}
+.cal .d.on small{color:#fff}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-h b{font-size:15px}
+.slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.slot{border:1px solid var(--border-2);border-radius:8px;background:var(--surface);padding:6px 10px;font-weight:600;font-size:13px;cursor:pointer;font-variant-numeric:tabular-nums}
+.slot:hover{border-color:var(--primary);color:var(--primary)}
+.slot.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.prof-slots{padding:14px 0;border-bottom:1px solid var(--border)}
+.prof-slots:last-child{border:0}
+.success-box{text-align:center;padding:32px 20px}
+.success-box .okc{width:64px;height:64px;border-radius:50%;background:var(--success-bg);color:var(--success);display:grid;place-items:center;margin:0 auto 14px}
+
+/* Agenda do dia */
+.day-nav{display:flex;align-items:center;gap:6px}
+.sched{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+.srow{display:flex;align-items:center;gap:12px;padding:8px 18px;border-bottom:1px solid var(--border);min-height:48px}
+.srow:last-child{border:0}
+.srow .h{width:46px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-2)}
+.srow .grow{flex:1;min-width:0}
+.srow.free .grow{color:var(--muted)}
+.srow.booked{cursor:pointer}
+.srow.booked:hover{background:var(--surface-2)}
+.srow.past.free{opacity:.5}
+.prof-card{display:flex;flex-direction:column}
+.prof-top{display:flex;gap:12px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.card-f{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--border);margin-top:auto}
+
+/* Sobreposições */
+.overlay{position:fixed;inset:0;background:rgba(10,16,32,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.modal{background:var(--surface);border-radius:14px;width:min(520px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);animation:pop .16s}
+.modal.wide{width:min(720px,100%)}
+@keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}}
+.modal-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)}
+.modal-h h3{font-size:16px}
+.modal-h .icon-btn{width:32px;height:32px;border:0}
+.modal-b{padding:20px;overflow:auto}
+.modal-f{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface-2);border-radius:0 0 14px 14px;flex-wrap:wrap}
+.overlay.drawer-ov{justify-content:flex-end;padding:0}
+.drawer{background:var(--surface);width:min(560px,100%);height:100%;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);animation:slide .2s}
+@keyframes slide{from{transform:translateX(30px);opacity:0}}
+.drawer .modal-b{flex:1}
+.drawer .modal-f{border-radius:0}
+.drawer .modal-h p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.sec-t{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;margin:22px 0 10px}
+#toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:200}
+.toast{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--success);border-radius:10px;padding:12px 16px;box-shadow:var(--shadow-lg);min-width:280px;max-width:400px;animation:pop .2s;font-weight:500}
+.toast.error{border-left-color:var(--danger)}.toast.info{border-left-color:var(--primary)}
+.toast .i{color:var(--success)}.toast.error .i{color:var(--danger)}.toast.info .i{color:var(--primary)}
+
+/* Seletor de paciente */
+.picker-in{position:relative}
+.picker-in>.i{position:absolute;left:12px;top:11px;color:var(--muted)}
+.picker-in .input{padding-left:38px}
+.picker-sel .list-row{cursor:default}
+.picker-sel .list-row:hover{background:var(--surface);border-color:var(--border)}
+
+.faq details{border-bottom:1px solid var(--border);padding:14px 0}
+.faq details:last-child{border:0}
+.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--muted);font-size:18px;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{margin:8px 0 0;color:var(--text-2)}
+
+.receipt{border:1px solid var(--border);border-radius:12px;padding:20px}
+.receipt .rh{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:14px}
+.receipt ul{margin:8px 0 0;padding-left:18px;color:var(--text-2);font-size:13px}
+
+@media (max-width:1100px){
+  .g2,.g3,.wiz,.g-eq{grid-template-columns:1fr}
+  .summary{position:static}
+}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;width:272px;z-index:90;transform:translateX(-100%);transition:transform .2s}
+  body.nav-open .side{transform:none;box-shadow:var(--shadow-lg)}
+  body.nav-open::after{content:"";position:fixed;inset:0;background:rgba(10,16,32,.4);z-index:80}
+  .menu-btn{display:grid}
+  .top{padding:0 16px;gap:8px}
+  .top .titles{display:none}
+  .gsearch{width:auto;flex:1;margin-left:0}
+  .gsearch kbd,.user div{display:none}
+  .view{padding:16px}
+  .form-grid,.dl{grid-template-columns:1fr}
+  .sched{grid-template-columns:1fr}
+  .hbar{grid-template-columns:100px 1fr 40px}
+  .bell-wrap .dropdown{position:fixed;left:16px;right:16px;top:70px;width:auto}
+}
+@media print{
+  .side,.top,.no-print,#toasts{display:none!important}
+  .app{display:block}
+  body{background:#fff}
+  .card{box-shadow:none}
+  body.print-modal .app{display:none}
+  body.print-modal .overlay{position:static;background:none;padding:0}
+  body.print-modal .modal{box-shadow:none;max-height:none;width:100%}
+  body.print-modal .modal-h,body.print-modal .modal-f{display:none}
+}
 </style>
 </head>
 <body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/></svg></div>
+      <div><b>Central de Regulação</b><span>Módulo Ambulatorial</span></div>
+    </div>
+    <div class="unit"><small>Unidade</small><b id="unit-name"></b></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-f">Ambiente de demonstração · dados fictícios<br><button data-act="reset">Restaurar dados de exemplo</button></div>
+  </aside>
 
-<header>
-  <div class="brand">
-    <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
-      <circle cx="23" cy="23" r="21" fill="#fff" stroke="#c0282d" stroke-width="3"/>
-      <rect x="18" y="9" width="10" height="28" rx="2" fill="#c0282d"/>
-      <rect x="9" y="18" width="28" height="10" rx="2" fill="#c0282d"/>
-    </svg>
-    <div><small>Rede Regional de Saúde (demo)</small><b>Central de Regulação</b></div>
+  <div class="main">
+    <header class="top">
+      <button class="icon-btn menu-btn" data-act="toggleNav" aria-label="Menu"></button>
+      <div class="titles"><div class="crumb" id="crumb"></div><h2 id="ptitle"></h2></div>
+      <div class="gsearch">
+        <span id="gs-ico"></span>
+        <input id="gsearch" placeholder="Buscar paciente ou tela…" autocomplete="off">
+        <kbd>Ctrl K</kbd>
+        <div class="dropdown hide" id="gresults"></div>
+      </div>
+      <div class="bell-wrap">
+        <button class="icon-btn" data-act="bell" id="bell" aria-label="Pendências"></button>
+        <div class="dropdown hide" id="bell-dd"></div>
+      </div>
+      <button class="icon-btn" data-act="toggleTheme" id="theme-btn" aria-label="Alternar tema"></button>
+      <div class="user"><div class="avatar">UD</div><div><b>Usuário Demo</b><span>Recepção</span></div></div>
+    </header>
+    <main class="view" id="view"></main>
   </div>
-  <div class="hright">
-    <div class="htitle">MÓDULO DE REGULAÇÃO<br>AMBULATORIAL</div>
-    <div class="hinfo"><span>Usuário: USUÁRIO DEMO</span><span>Perfil: Recepção</span><span>Unidade: <span class="unidade"></span></span></div>
-  </div>
-</header>
-
-<nav>
-  <ul>
-    <li><span>Cadastro</span><ul class="dd">
-      <li data-go="pacientes">Paciente</li>
-      <li data-go="profissionais">Profissional</li>
-    </ul></li>
-    <li><span>Manutenção</span><ul class="dd">
-      <li data-go="profissionais">Agenda do Profissional</li>
-      <li data-go="reset">Restaurar dados de exemplo</li>
-    </ul></li>
-    <li><span>Agendamento</span><ul class="dd">
-      <li data-go="agenda">Agenda</li>
-      <li data-go="extra">Extra</li>
-      <li data-go="demanda">Cadastro Demanda por Recurso</li>
-      <li data-go="diaria">Agenda Diária</li>
-      <li data-go="recepcao">Recepção</li>
-      <li data-go="troca">Troca de Paciente</li>
-      <li data-go="solicitacoes">Solicitações</li>
-      <li data-go="ausentes">Ausentes</li>
-    </ul></li>
-    <li><span>Relatório</span><ul class="dd">
-      <li data-go="relatorio">Agendamentos por Período</li>
-    </ul></li>
-    <li><span>Consulta</span><ul class="dd">
-      <li data-go="consulta">Agendamentos do Paciente</li>
-    </ul></li>
-    <li><span>Ação Judicial</span><ul class="dd">
-      <li data-go="judicial">Cadastrar / Listar</li>
-    </ul></li>
-  </ul>
-  <div class="nright"><span data-go="contato">Fale Conosco</span><span data-go="contato">Help Desk</span></div>
-</nav>
-
-<main id="app"></main>
-
-<footer>
-  <div class="fav"><a data-go="agenda" style="text-decoration:underline">Favoritos</a><span class="arr">❯❯❯</span>
-    <a data-go="agenda">Agenda</a><a data-go="demanda">Cadastro Demanda por Recurso</a><a data-go="diaria">Agenda Diária</a></div>
-  <div class="fbar"><span>Sistema de Regulação (demonstração) | dados fictícios</span><span>HELP DESK &nbsp;Dúvidas e Esclarecimentos | Atendimento 24 horas | suporte@exemplo.com | (00) 0000-0000</span></div>
-</footer>
-
-<div id="toast"></div>
+</div>
+<div id="toasts"></div>
 
 <script>
-/* ===================== Dados base (fictícios) ===================== */
-const UNIDADE = 'HOSPITAL REGIONAL MODELO', MUN = 'VALE VERDE';
-const UNID_EXT = [
-  {nome:'AME VALE VERDE', mun:'VALE VERDE'},
-  {nome:'HOSPITAL SANTA LUZIA', mun:'SERRA AZUL'},
-  {nome:'POLICLÍNICA CENTRAL', mun:'RIO CLARO DO OESTE'},
-];
-const PROFS = [
-  {id:1, nome:'ANDRÉ LUIZ CARVALHO',      esp:'Ortopedia - Trauma', dias:[1,3,5]},
-  {id:2, nome:'BEATRIZ SOUZA LIMA',        esp:'Ortopedia - Trauma', dias:[2,4]},
-  {id:3, nome:'RODRIGO ALMEIDA PRADO',     esp:'Ortopedia - Trauma', dias:[1,2,3]},
-  {id:4, nome:'VICTOR HUGO MENDES',        esp:'Ortopedia - Trauma', dias:[3,4,5]},
-  {id:5, nome:'FERNANDA ROCHA DIAS',       esp:'Neurocirurgia',      dias:[1,4]},
-  {id:6, nome:'ERLON BATISTA FREITAS',     esp:'Neurocirurgia',      dias:[2,3,5]},
-  {id:7, nome:'MARIANA COSTA RIBAS',       esp:'Cardiologia',        dias:[1,2,3,4,5]},
-  {id:8, nome:'PAULO HENRIQUE NUNES',      esp:'Oftalmologia',       dias:[2,4]},
-  {id:9, nome:'JULIANA TEIXEIRA MOURA',    esp:'Endocrinologia',     dias:[1,3]},
-  {id:10,nome:'GUSTAVO PEREIRA LOPES',     esp:'Urologia',           dias:[4,5]},
-];
-const ESPS = [...new Set(PROFS.map(p=>p.esp))].sort();
-const SLOTS = []; for(let h=7;h<11;h++) for(let m=0;m<60;m+=20) SLOTS.push(pad(h)+':'+pad(m));
-const WD = ['D','S','T','Q','Q','S','S'];
-const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const TIPOS = ['Primeira Vez','Retorno','Interconsulta'];
+/* =========================================================
+   Ícones
+   ========================================================= */
+const ICONS = {
+  home:'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  calplus:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/>',
+  clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M16 4a4 4 0 0 1 0 8M22 21c0-3-1.5-5-4-5.7"/>',
+  steth:'<path d="M6 3v6a4 4 0 0 0 8 0V3M10 13v3a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="12" r="2"/>',
+  inbox:'<path d="M3 13h5l2 3h4l2-3h5M5 5h14l2 8v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6z"/>',
+  send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>',
+  scale:'<path d="M12 3v18M7 21h10M5 7h14M7 7l-3 7a3 3 0 0 0 6 0zM17 7l-3 7a3 3 0 0 0 6 0z"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 1-1 1.7M12 17h.01"/>',
+  plus:'M12 5v14M5 12h14',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  check:'M5 12l5 5L20 7',
+  x:'M6 6l12 12M18 6 6 18',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  swap:'<path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/>',
+  left:'M15 6l-6 6 6 6', right:'M9 6l6 6-6 6',
+  printer:'<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2"/><rect x="6" y="14" width="12" height="7"/>',
+  moon:'M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',
+  menu:'M4 6h16M4 12h16M4 18h16',
+  download:'<path d="M12 4v11M7 10l5 5 5-5M4 20h16"/>',
+  userx:'<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M17 8l4 4M21 8l-4 4"/>',
+  zap:'M13 2 3 14h8l-1 8 10-12h-8z',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 21h4"/>',
+  edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',
+  phone:'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2',
+  alert:'<path d="M12 3 2 20h20zM12 10v4M12 17h.01"/>',
+  login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',
+  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
+  lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  more:'<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
+};
+const ic = (n, s=18) => { const v=ICONS[n]; return `<svg class="i" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${v[0]==='<'?v:`<path d="${v}"/>`}</svg>`; };
 
-const SEED_PAC = [
-  ['MARIA APARECIDA SANTOS','', '1948-03-12','JOSEFA SANTOS'],
-  ['JOÃO CARLOS OLIVEIRA','', '1961-07-25','ANA OLIVEIRA'],
-  ['ANTÔNIA FERREIRA GOMES','', '1940-11-02','BENEDITA FERREIRA'],
-  ['LUCAS GABRIEL MARTINS','', '1998-01-19','CRISTINA MARTINS'],
-  ['SEBASTIÃO RIBEIRO DA SILVA','', '1955-05-30','MARIA RIBEIRO'],
-  ['ALINE CRISTINA BARBOSA','', '1987-09-14','SUELI BARBOSA'],
-  ['FRANCISCO DE ASSIS MOREIRA','', '1950-12-08','RITA MOREIRA'],
-  ['TERESA CRISTINA PAIVA','', '1946-04-21','LÚCIA PAIVA'],
-  ['RAFAEL HENRIQUE CASTRO','', '1979-06-03','MÁRCIA CASTRO'],
-  ['ROBERTA NASCIMENTO','ROBERTO NASCIMENTO','1992-02-27','IVONE NASCIMENTO'],
-  ['JOSÉ ROBERTO CAMARGO','', '1958-10-16','ODETE CAMARGO'],
-  ['HELENA VIEIRA DUARTE','', '1939-08-09','AMÉLIA VIEIRA'],
-];
-
-/* ===================== Utilitários ===================== */
-function pad(n){return String(n).padStart(2,'0')}
-const $ = s => document.querySelector(s);
+/* =========================================================
+   Utilitários
+   ========================================================= */
+const $  = (s,r=document) => r.querySelector(s);
+const $$ = (s,r=document) => [...r.querySelectorAll(s)];
+const pad = n => String(n).padStart(2,'0');
 const iso = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-const br = s => s ? s.slice(8,10)+'-'+s.slice(5,7)+'-'+s.slice(0,4) : '';
 const today = () => iso(new Date());
-const addDays = (s,n) => { const d=new Date(s+'T12:00'); d.setDate(d.getDate()+n); return iso(d); };
-const norm = s => (s||'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase();
-const esc = s => (s??'').toString().replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const prof = id => PROFS.find(p=>p.id==id);
-const pac  = id => S.patients.find(p=>p.id==id);
-function rnd(seed){ let x=seed; return ()=> (x=(x*16807)%2147483647)/2147483647; }
-function digits(r,n){ let s=''; for(let i=0;i<n;i++) s+=Math.floor(r()*10); return s; }
+const nowHM = () => { const d=new Date(); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+const D = s => new Date(s+'T12:00');
+const addDays = (s,n) => { const d=D(s); d.setDate(d.getDate()+n); return iso(d); };
+const diffDays = (a,b) => Math.round((D(b)-D(a))/864e5);
+const br = s => s ? s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4) : '';
+const brs = s => s ? s.slice(8,10)+'/'+s.slice(5,7) : '';
+const WD = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const longDate = s => D(s).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+const capital = s => s.charAt(0).toUpperCase()+s.slice(1);
+const age = n => { const b=D(n), t=new Date(); let a=t.getFullYear()-b.getFullYear(); if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate())) a--; return a; };
+const norm = s => (s??'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const esc = s => (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials = n => n.split(' ').filter(w=>w.length>2).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const cpfFmt = c => c && c.length===11 ? c.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4') : (c||'—');
+const title = s => s.toLowerCase().replace(/(^|\s)(\S)/g,(m,a,b)=>a+b.toUpperCase()).replace(/ (De|Da|Do|Dos|Das|E) /g,w=>w.toLowerCase());
+function rnd(seed){ let x=seed; return () => (x=(x*16807)%2147483647)/2147483647; }
+const pick = (r,a) => a[Math.floor(r()*a.length)];
+const digits = (r,n) => Array.from({length:n},()=>Math.floor(r()*10)).join('');
+const byTime = (a,b) => (a.data+a.hora).localeCompare(b.data+b.hora);
 
-function toast(msg, err){
-  const t=$('#toast'); t.textContent=msg; t.className=err?'err':''; t.style.display='block';
-  clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none', 3200);
-}
+/* =========================================================
+   Dados fictícios
+   ========================================================= */
+const UNIDADE = 'Hospital Regional Modelo';
+const EXTERNAS = ['AME Vale Verde','Hospital Santa Luzia','Policlínica Central','Centro de Especialidades Serra Azul'];
+const TIPOS = ['Primeira vez','Retorno','Interconsulta'];
+const CIDS = {'M54.5':'Dor lombar baixa','S82.0':'Fratura da patela','I10':'Hipertensão essencial','H25.9':'Catarata senil','E11.9':'Diabetes mellitus tipo 2','N40':'Hiperplasia da próstata','G43.9':'Enxaqueca','M17.1':'Gonartrose primária','S52.5':'Fratura da extremidade distal do rádio','I20.9':'Angina pectoris','G56.0':'Síndrome do túnel do carpo','E03.9':'Hipotireoidismo'};
+const ST = {
+  agendado:['Agendado','info'], presente:['Aguardando','warn'], atendido:['Atendido','success'], ausente:['Falta','danger'], cancelado:['Cancelado','neutral'],
+  pendente:['Pendente','warn'], agendada:['Agendada','success'], devolvida:['Devolvida','neutral'],
+  enviada:['Aguardando resposta','info'], aceita:['Aceita','success'], recusada:['Recusada','danger'],
+  aberta:['Em aberto','warn'], cumprida:['Cumprida','success'], aberto:['Aberto','info'],
+};
+const badge = s => `<span class="badge ${ST[s][1]}">${ST[s][0]}</span>`;
 
-/* ===================== Estado / persistência ===================== */
-const KEY='regamb_demo_v1';
-let S;
 function seed(){
-  const r=rnd(42);
-  const patients = SEED_PAC.map((p,i)=>({
-    id: 35200400+i*7, nome:p[0], social:p[1], nasc:p[2], mae:p[3],
-    cpf:digits(r,11), cns:'7'+digits(r,14), rg:digits(r,9), pront:String(110000+i*137),
-    fone:'(00) 9'+digits(r,4)+'-'+digits(r,4)
-  }));
-  const appts=[]; let aid=1;
-  const t=today();
-  for(let off=-4; off<=6; off++){
-    const day=addDays(t,off), wd=new Date(day+'T12:00').getDay();
-    PROFS.filter(p=>p.dias.includes(wd)).forEach(p=>{
-      SLOTS.forEach(h=>{
-        if(r()<0.45){
-          const pa=patients[Math.floor(r()*patients.length)];
-          let st='agendado';
-          if(off<0) st = r()<0.75?'presente':'agendado';
-          appts.push({id:aid++, pac:pa.id, prof:p.id, data:day, hora:h, tipo:TIPOS[Math.floor(r()*2)], st, obs:'', unidade:UNIDADE, chegada: st==='presente'?h:''});
+  const r = rnd(20261030), t = today();
+  const nomes = ['MARIA APARECIDA SANTOS','JOÃO CARLOS OLIVEIRA','ANTÔNIA FERREIRA GOMES','LUCAS GABRIEL MARTINS','SEBASTIÃO RIBEIRO DA SILVA','ALINE CRISTINA BARBOSA','FRANCISCO DE ASSIS MOREIRA','TERESA CRISTINA PAIVA','RAFAEL HENRIQUE CASTRO','ROBERTA NASCIMENTO','JOSÉ ROBERTO CAMARGO','HELENA VIEIRA DUARTE','PEDRO HENRIQUE ALVES','LUZIA DE FÁTIMA CORREIA','CARLOS EDUARDO PINTO','VERA LÚCIA MACHADO','ANDERSON LUIS FARIAS','IRENE SOARES CAMPOS','MATEUS VINÍCIUS ROCHA','ODETE MARIA FONSECA','GERALDO MAGALHÃES','PATRÍCIA HELENA LEITE','BENEDITO CARDOSO','CAMILA FERNANDES SILVA'];
+  const maes = ['JOSEFA','ANA','BENEDITA','CRISTINA','RITA','SUELI','LÚCIA','MÁRCIA','IVONE','ODETE','AMÉLIA','APARECIDA','TEREZINHA','NEUSA'];
+  const patients = nomes.map((n,i)=>({
+    id:35200400+i*7, nome:n, social: i===9?'ROBERTO NASCIMENTO':'',
+    nasc:`${1936+Math.floor(r()*68)}-${pad(1+Math.floor(r()*12))}-${pad(1+Math.floor(r()*28))}`,
+    mae: pick(r,maes)+' '+n.split(' ').at(-1), cpf:digits(r,11), cns:'7'+digits(r,14), rg:digits(r,9), pront:String(110000+i*137),
+    fone:`(14) 9${digits(r,4)}-${digits(r,4)}`, cidade:'Vale Verde' }));
+  const profs = [
+    ['ANDRÉ LUIZ CARVALHO','Ortopedia e Traumatologia',[1,3,5],'M'], ['BEATRIZ SOUZA LIMA','Ortopedia e Traumatologia',[2,4],'T'],
+    ['RODRIGO ALMEIDA PRADO','Ortopedia e Traumatologia',[1,2,3],'M'], ['VICTOR HUGO MENDES','Ortopedia e Traumatologia',[3,4,5],'M'],
+    ['FERNANDA ROCHA DIAS','Neurocirurgia',[1,4],'M'], ['ERLON BATISTA FREITAS','Neurocirurgia',[2,3,5],'T'],
+    ['MARIANA COSTA RIBAS','Cardiologia',[1,2,3,4,5],'M'], ['PAULO HENRIQUE NUNES','Oftalmologia',[2,4],'M'],
+    ['JULIANA TEIXEIRA MOURA','Endocrinologia',[1,3],'T'], ['GUSTAVO PEREIRA LOPES','Urologia',[4,5],'M'],
+    ['SANDRA MELO QUEIROZ','Neurologia',[1,2,4],'T'], ['RICARDO ANTUNES BRAGA','Cardiologia',[2,5],'T'],
+  ].map((p,i)=>({id:i+1, nome:p[0], esp:p[1], dias:p[2], turno:p[3], crm:'CRM '+(100000+Math.floor(r()*90000)), bloqueios:[]}));
+
+  const S0 = {patients, profs, appts:[], demandas:[], sol:[], jud:[], trocas:[], tickets:[], log:[], seq:{appt:1,dem:1,sol:1,jud:1,pac:35200600,tk:1}};
+  const nh = nowHM();
+  for(let off=-21; off<=21; off++){
+    const day=addDays(t,off);
+    profs.forEach(p=>{
+      if(!works(p,day)) return;
+      slotsOf(p).forEach(h=>{
+        const prob = off<=0 ? .78 : Math.max(.12, .74-off*.03);
+        if(r()>prob) return;
+        let st='agendado', chegada='';
+        if(off<0 || (off===0 && h<nh)){
+          const x=r();
+          if(off<0) st = x<.80?'atendido':x<.93?'ausente':'cancelado';
+          else { const [hh,mm]=nh.split(':').map(Number), [sh,sm]=h.split(':').map(Number), ago=hh*60+mm-(sh*60+sm);
+            st = ago<50 ? (x<.7?'presente':'agendado') : (x<.88?'atendido':'agendado'); }
+          if(st==='atendido'||st==='presente') chegada=h;
         }
+        S0.appts.push({id:S0.seq.appt++, pac:pick(r,patients).id, prof:p.id, data:day, hora:h, tipo:pick(r,['Primeira vez','Retorno','Retorno']), st, chegada, obs:'', extra:false, hist:[]});
       });
     });
   }
-  const demandas=[
-    {id:1, tipo:'Consulta', esp:'Neurocirurgia', pac:patients[2].id, data:addDays(t,-6), prio:true, origem:'Ambulatório', doc:'', solic:'DR. ERLON B. FREITAS', tipoCons:'Primeira Vez', ano:'', mes:'', turno:'', obs:'Aguardando vaga', st:'pendente', unidInd:UNIDADE, tele:'Não', cid:'M54.5'},
-    {id:2, tipo:'Consulta', esp:'Ortopedia - Trauma', pac:patients[4].id, data:addDays(t,-2), prio:false, origem:'Pronto Socorro', doc:'', solic:'DR. VICTOR H. MENDES', tipoCons:'Retorno', ano:'', mes:'', turno:'Manhã', obs:'Pós alta - solicitar TC', st:'pendente', unidInd:UNIDADE, tele:'Não', cid:'S82.0'},
+  [
+    [2,'Neurocirurgia','Primeira vez',true,'Ambulatório','DR. ERLON B. FREITAS','M54.5','Dor lombar com irradiação, falha do tratamento clínico',-38],
+    [4,'Ortopedia e Traumatologia','Retorno',false,'Pronto Socorro','DR. VICTOR H. MENDES','S82.0','Pós-alta — solicitar TC de controle',-3],
+    [7,'Oftalmologia','Primeira vez',false,'Unidade Básica','DRA. CLARA M. SOUZA','H25.9','Avaliação cirúrgica',-55],
+    [11,'Endocrinologia','Primeira vez',false,'Unidade Básica','DR. MARCOS T. LIMA','E11.9','HbA1c 10,2%',-21],
+    [15,'Cardiologia','Interconsulta',true,'Internação','DRA. MARIANA C. RIBAS','I20.9','Dor torácica aos esforços',-6],
+    [19,'Urologia','Primeira vez',false,'Unidade Básica','DR. PAULO R. NETO','N40','PSA alterado',-14],
+    [1,'Neurologia','Primeira vez',false,'Ambulatório','DRA. SANDRA M. QUEIROZ','G43.9','Cefaleia crônica',-9],
+    [13,'Ortopedia e Traumatologia','Primeira vez',false,'Pronto Socorro','DR. ANDRÉ L. CARVALHO','S52.5','Fratura consolidada, avaliar fisioterapia',-1],
+    [21,'Neurocirurgia','Retorno',false,'Ambulatório','DR. ERLON B. FREITAS','G56.0','Pós-operatório tardio',-70],
+  ].forEach(d=>S0.demandas.push({id:S0.seq.dem++, pac:patients[d[0]].id, esp:d[1], tipoCons:d[2], prio:d[3], origem:d[4], solic:d[5], cid:d[6], obs:d[7], data:addDays(t,d[8]), st:'pendente', doc:'', tele:'Não', turno:'', periodo:'', motivo:'', appt:null}));
+  S0.demandas[2].st='agendada';
+  [[3,'Neurocirurgia',EXTERNAS[1],'enviada',-2,''],[8,'Oftalmologia',EXTERNAS[0],'aceita',-10,addDays(t,9)+' 08:20'],[16,'Urologia',EXTERNAS[2],'recusada',-15,'Sem oferta de vaga no período'],[10,'Cardiologia',EXTERNAS[3],'enviada',-1,'']]
+    .forEach(s=>S0.sol.push({id:S0.seq.sol++, pac:patients[s[0]].id, esp:s[1], unidade:s[2], st:s[3], data:addDays(t,s[4]), resposta:s[5], just:'Necessidade de atendimento especializado não disponível na unidade.'}));
+  [['1002345-67.2026.8.26.0071',5,'Consulta','Neurocirurgia',4,'1ª Vara da Fazenda Pública'],['1004871-12.2026.8.26.0071',12,'Cirurgia','Ortopedia e Traumatologia',15,'2ª Vara Cível'],['1001190-30.2026.8.26.0071',17,'Exame','Cardiologia',-1,'1ª Vara da Fazenda Pública']]
+    .forEach(j=>S0.jud.push({id:S0.seq.jud++, processo:j[0], pac:patients[j[1]].id, objeto:j[2], esp:j[3], prazo:addDays(t,j[4]), vara:j[5], st:'aberta', data:addDays(t,-20), obs:''}));
+  const ts = Date.now();
+  S0.log = [
+    {ts:ts-60e3*12, msg:'Chegada registrada: '+title(patients[0].nome)},
+    {ts:ts-60e3*40, msg:'Demanda #8 cadastrada (Ortopedia e Traumatologia)'},
+    {ts:ts-60e3*95, msg:'Solicitação externa #4 enviada a '+EXTERNAS[3]},
+    {ts:ts-60e3*180, msg:'Agenda de Victor Hugo Mendes consultada'},
   ];
-  return {patients, appts, demandas, nextAppt:aid, nextDem:3, nextPac:35200600};
+  return S0;
 }
-function load(){ try{ S=JSON.parse(localStorage.getItem(KEY)); }catch(e){} if(!S||!S.patients) S=seed(); }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+/* =========================================================
+   Estado
+   ========================================================= */
+const KEY='regamb_v2';
+let S, IDX=null;
+function load(){ try{ S=JSON.parse(localStorage.getItem(KEY)); }catch(e){} if(!S||!S.seq) S=seed(); }
+function save(){ IDX=null; try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function log(msg){ S.log.unshift({ts:Date.now(), msg}); S.log=S.log.slice(0,60); }
+
+const pac  = id => S.patients.find(p=>p.id==id);
+const prof = id => S.profs.find(p=>p.id==id);
+const appt = id => S.appts.find(a=>a.id==id);
+const ESPS = () => [...new Set(S.profs.map(p=>p.esp))].sort();
+
+function slotsOf(p){
+  const out=[], [h0,h1] = p.turno==='M' ? [7,12] : [13,17];
+  for(let h=h0; h<h1; h++) for(let m=0; m<60; m+=20) out.push(pad(h)+':'+pad(m));
+  return out;
+}
+function works(p, day){ return p.dias.includes(D(day).getDay()) && !p.bloqueios.some(b=>b.data===day); }
+function bookedIdx(){
+  if(IDX) return IDX;
+  IDX=new Map();
+  S.appts.forEach(a=>{ if(a.st==='cancelado'||a.extra) return; const k=a.prof+'|'+a.data; if(!IDX.has(k)) IDX.set(k,new Set()); IDX.get(k).add(a.hora); });
+  return IDX;
+}
+function freeSlots(p, day){
+  const t=today();
+  if(day<t || !works(p,day)) return [];
+  const b=bookedIdx().get(p.id+'|'+day)||new Set(), nh=nowHM();
+  return slotsOf(p).filter(h=>!b.has(h) && (day>t || h>nh));
+}
+function firstFree(esp, profId, from=today(), max=150){
+  for(let i=0;i<max;i++){ const d=addDays(from,i); if(S.profs.some(p=>p.esp===esp && (!profId||p.id==profId) && freeSlots(p,d).length)) return d; }
+  return null;
+}
+function absRate(de, ate){
+  const l=S.appts.filter(a=>a.data>=de && a.data<=ate && (a.st==='atendido'||a.st==='ausente'));
+  return l.length ? Math.round(l.filter(a=>a.st==='ausente').length*100/l.length) : 0;
+}
+function searchPatients(q, n=8){
+  q=norm(q).trim(); if(!q) return [];
+  const dq=q.replace(/\D/g,'');
+  return S.patients.filter(p=> norm(p.nome).includes(q) || norm(p.social).includes(q) ||
+    (dq.length>=3 && (p.cpf.includes(dq)||(p.cns||'').includes(dq)||String(p.id).includes(dq)||(p.pront||'').includes(dq)))).slice(0,n);
+}
+function newUI(){
+  return {
+    route:'dashboard',
+    book:{step:1,q:'',pac:null,esp:'',tipo:'Primeira vez',prof:'',month:null,day:null,sel:null,obs:'',demanda:null,jud:null,preset:null,done:null},
+    rec:{f:'todos',q:''}, day:{date:today(), prof:''}, aus:{days:30}, dem:{tab:'pendente',q:'',esp:''}, sol:{tab:'todas'},
+    pac:{q:''}, troca:{date:today(), prof:''}, rel:{de:addDays(today(),-30), ate:today(), preset:30},
+  };
+}
+let UI = newUI();
 load();
 
-/* Estado da interface (não persistido) */
-const UI = {
-  view:'agenda',
-  ag:{tab:'paciente', pac:null, q:{}, esp:'', tipo:'Primeira Vez', retorno:false, inter:false, profNome:'', mes:null, dia:null, ext:false},
-  dem:{tab:'inserir', pac:null, q:{}, form:{}, filtro:{st:'',esp:''}},
-  diaria:{data:today(), prof:''},
-  pacientes:{q:{}},
-};
-
-/* ===================== Componentes ===================== */
-const ICON = {
-  search:'<svg class="ico" viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" fill="#cfe2ff" stroke="#2d5f9a" stroke-width="1.6"/><path d="M10 10l4.5 4.5" stroke="#8a5a1a" stroke-width="2.2"/></svg>',
-  doc:'<svg class="ico" viewBox="0 0 16 16"><path d="M3 1h7l3 3v11H3z" fill="#fff" stroke="#2d5f9a"/><path d="M10 1v3h3" fill="none" stroke="#2d5f9a"/></svg>',
-  down:'<svg class="ico" viewBox="0 0 16 16"><path d="M8 2v9M4 7l4 5 4-5" stroke="#2d5f9a" stroke-width="2" fill="none"/></svg>',
-  clr:'<svg class="ico" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" fill="#fff" stroke="#777"/></svg>',
-  ok:'<svg class="ico" viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" stroke="#2e8540" stroke-width="2.2" fill="none"/></svg>',
-  x:'<svg class="ico" viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13" stroke="#c0282d" stroke-width="2.2"/></svg>',
-  print:'<svg class="ico" viewBox="0 0 16 16"><rect x="4" y="1" width="8" height="5" fill="#fff" stroke="#555"/><rect x="1" y="6" width="14" height="6" fill="#bbb" stroke="#555"/><rect x="4" y="10" width="8" height="5" fill="#fff" stroke="#555"/></svg>',
-};
-const btn = (label, act, icon, extra='') => `<button class="btn ${extra}" data-act="${act}">${icon?ICON[icon]:''}${label}</button>`;
-const sel = (name, opts, val, ph) => `<select name="${name}">${ph!==undefined?`<option value="">${ph}</option>`:''}${opts.map(o=>{const v=typeof o==='object'?o.v:o, l=typeof o==='object'?o.l:o; return `<option value="${esc(v)}" ${String(v)===String(val??'')?'selected':''}>${esc(l)}</option>`}).join('')}</select>`;
-const fld = (label, inner, w) => `<div class="f" ${w?`style="width:${w}px"`:''}><label>${label}</label>${inner}</div>`;
-const inp = (name, val, w, type='text') => `<input type="${type}" name="${name}" value="${esc(val??'')}" style="width:${w||100}px">`;
-
-const Q_FIELDS = [['pront','Prontuário',80],['cns','CNS',110],['cpf','CPF',95],['rg','RG',85],['id','Código',85],['nome','Nome',220],['social','Nome Social',180],['nasc','Nascimento',85],['mae','Filiação 1',230]];
-
-function searchPatients(q){
-  const keys = Object.keys(q).filter(k=>q[k]);
-  if(!keys.length) return S.patients;
-  return S.patients.filter(p=>keys.every(k=>{
-    if(k==='nasc') return br(p.nasc).includes(q.nasc) || p.nasc.includes(q.nasc);
-    return norm(p[k]).includes(norm(q[k]));
-  }));
+/* =========================================================
+   Sobreposições (modal, gaveta, aviso)
+   ========================================================= */
+function toast(msg, kind='success'){
+  const el=document.createElement('div'); el.className='toast '+kind; el.setAttribute('role','status');
+  el.innerHTML = ic(kind==='error'?'alert':kind==='info'?'help':'check',18)+`<div>${msg}</div>`;
+  const box=$('#toasts'); box.appendChild(el); while(box.children.length>3) box.firstElementChild.remove();
+  setTimeout(()=>el.remove(), 3800);
 }
-
-/* Busca de paciente reaproveitada nas telas */
-function patSearch(ctx, st, withNovo){
-  const res = searchPatients(st.q);
-  return `
-  <form class="row" data-search="${ctx}">
-    ${Q_FIELDS.map(([k,l,w])=>fld(l, inp(k, st.q[k], w))).join('')}
-    <button class="btn" type="submit">${ICON.search}Buscar</button>
-    ${withNovo?btn('Novo','novoPac','doc'):''}
-  </form>
-  <table class="g"><thead><tr><th style="width:24px"></th><th>CPF</th><th>Código</th><th>Nome</th><th>Nome Social</th><th>Nascimento</th><th>Filiação 1</th></tr></thead><tbody>
-  ${res.length? res.map(p=>`<tr class="click ${st.pac==p.id?'sel':''}" data-pick="${ctx}" data-id="${p.id}">
-      <td><input type="radio" ${st.pac==p.id?'checked':''}></td><td>${p.cpf}</td><td>${p.id}</td><td>${esc(p.nome)}</td><td>${esc(p.social)}</td><td>${br(p.nasc)}</td><td>${esc(p.mae)}</td></tr>`).join('')
-    : `<tr><td colspan="7" class="empty">Nenhum paciente encontrado. Use "Novo" para cadastrar.</td></tr>`}
-  </tbody></table>`;
-}
-
-function pacHeader(id){ const p=pac(id); return p? `${p.id} - ${esc(p.nome)}` : ''; }
-
-/* ===================== Tela: Agenda ===================== */
-function freeSlots(profId, day){
-  const busy = new Set(S.appts.filter(a=>a.prof==profId && a.data===day && a.st!=='cancelado').map(a=>a.hora));
-  return SLOTS.filter(h=>!busy.has(h));
-}
-function profsFor(day, A){
-  const wd = new Date(day+'T12:00').getDay();
-  return PROFS.filter(p=> p.dias.includes(wd) && (!A.esp || p.esp===A.esp) && (!A.profNome || norm(p.nome).includes(norm(A.profNome))));
-}
-
-function vAgenda(){
-  const A=UI.ag, has=!!A.pac;
-  const tabs=[['paciente','Paciente'],['selecao','Seleção'],['interna','Agenda Interna'],['externa','Agenda Externa']];
-  let body='';
-  if(A.tab==='paciente') body = patSearch('ag', A, true);
-  if(A.tab==='selecao') body = `
-    <div class="row">
-      ${fld('Especialidade', sel('esp', ESPS, A.esp, 'Todas as especialidades'))}
-      ${fld('Tipo de Atendimento', sel('tipo', TIPOS, A.tipo))}
-    </div>
-    <div class="sect">Agendamentos do paciente</div>
-    ${apptTable(S.appts.filter(a=>a.pac==A.pac).sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora)), false)}
-    <div class="right">${btn('Avançar para Agenda Interna','goInterna','down','pri')}</div>`;
-  if(A.tab==='interna') body = vInterna();
-  if(A.tab==='externa') body = vExterna();
-  return `
-  <div class="tabsrow">
-    <div class="tabs">${tabs.map(([k,l])=>`<div class="tab ${A.tab===k?'on':''} ${k!=='paciente'&&!has?'dis':''}" data-agtab="${k}">${l}</div>`).join('')}</div>
-    <div class="pathead">${pacHeader(A.pac)}</div>
-  </div>${body}`;
-}
-
-function monthList(){
-  const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()-1);
-  const out=[]; for(let i=0;i<5;i++){ out.push({y:d.getFullYear(), m:d.getMonth()}); d.setMonth(d.getMonth()+1); } return out;
-}
-function vInterna(){
-  const A=UI.ag, t=today();
-  const ms=monthList();
-  if(A.mes===null) A.mes=1;
-  const {y,m}=ms[A.mes];
-  const nd=new Date(y,m+1,0).getDate();
-  let wds='', ds='';
-  for(let d=1; d<=nd; d++){
-    const day=y+'-'+pad(m+1)+'-'+pad(d), wd=new Date(y,m,d).getDay();
-    const profs = day<t ? [] : profsFor(day, A);
-    const free = profs.reduce((s,p)=>s+freeSlots(p.id,day).length,0);
-    const cls = ['d', !profs.length?'off':(free?'':'full'), day===t?'today':'', A.dia===day?'on':''].join(' ');
-    wds += `<div class="wd ${wd===0||wd===6?'we':''}">${WD[wd]}</div>`;
-    ds  += `<div class="${cls}" ${profs.length&&free?`data-day="${day}"`:''} title="${profs.length?free+' vaga(s)':'Sem agenda'}">${d}</div>`;
-  }
-  // os dois "rows" do grid: cabeçalho de dias da semana em cima, números embaixo
-  const cells = []; const W=wds.split('</div>').filter(Boolean), D=ds.split('</div>').filter(Boolean);
-  for(let i=0;i<W.length;i++){ cells.push(W[i]+'</div>', D[i]+'</div>'); }
-
-  let tbl='';
-  if(A.dia){
-    const profs=profsFor(A.dia, A).filter(p=>freeSlots(p.id,A.dia).length);
-    tbl = `<div class="sect">Consulta — ${br(A.dia)}</div>
-    <table class="g"><thead><tr><th>Unidade</th><th>Município</th><th>Profissional</th><th>Tipo Atendimento</th><th>Faixa Etária</th><th>Especialidade</th><th>Tipo</th><th>Horário</th><th>Vagas</th><th></th></tr></thead><tbody>
-    ${profs.length?profs.map(p=>{const fs=freeSlots(p.id,A.dia); return `<tr data-prow="${p.id}">
-      <td><b>${UNIDADE}</b></td><td>${MUN}</td><td>${p.nome}</td><td>Presencial</td><td>Todas</td><td>${p.esp}</td>
-      <td>${sel('tipo_'+p.id, TIPOS, A.retorno?'Retorno':A.inter?'Interconsulta':A.tipo)}</td>
-      <td>${sel('hora_'+p.id, fs, fs[0])}</td><td>${fs.length}</td>
-      <td><button class="btn pri" data-act="agendar" data-prof="${p.id}">${ICON.ok}Agendar</button></td></tr>`}).join('')
-      :`<tr><td colspan="10" class="empty">Sem vagas para os filtros selecionados.</td></tr>`}
-    </tbody></table>
-    ${fld('Observação', `<input type="text" name="obs" style="width:100%" value="${esc(A.obs||'')}">`)}`;
-  } else tbl = `<p class="hint" style="margin-top:12px">Selecione um dia disponível no calendário. Dias em cinza não possuem agenda${A.esp?' de '+A.esp:''}.</p>`;
-
-  return `
-  <div class="row">
-    <label class="chk"><input type="checkbox" name="retorno" ${A.retorno?'checked':''}>Retorno</label>
-    <label class="chk"><input type="checkbox" name="inter" ${A.inter?'checked':''}>Interconsulta</label>
-    ${fld('Especialidade', sel('esp', ESPS, A.esp, 'Todas'))}
-    ${fld('Nome do profissional', inp('profNome', A.profNome, 300))}
-    ${btn('Limpar','limparAg','clr')}
-  </div>
-  <div class="months">${ms.map((x,i)=>`<div class="month ${A.mes===i?'on':''}" data-mes="${i}">${MESES[x.m]}/${x.y}</div>`).join('')}</div>
-  <div class="days">${cells.join('')}</div>
-  ${tbl}`;
-}
-
-function vExterna(){
-  const A=UI.ag;
-  return `
-  <div class="row">${fld('Especialidade', sel('esp', ESPS, A.esp, 'Selecione'))}</div>
-  <p class="hint">Unidades externas da rede. A solicitação gera uma demanda para a central de regulação.</p>
-  <table class="g"><thead><tr><th>Unidade</th><th>Município</th><th>Especialidade</th><th>Previsão</th><th></th></tr></thead><tbody>
-  ${UNID_EXT.map((u,i)=>`<tr><td><b>${u.nome}</b></td><td>${u.mun}</td><td>${A.esp||'—'}</td><td>${15+i*10} dias</td>
-    <td><button class="btn" data-act="solicitarExt" data-u="${i}">${ICON.doc}Solicitar vaga</button></td></tr>`).join('')}
-  </tbody></table>`;
-}
-
-/* ===================== Tela: Demanda por Recurso ===================== */
-function vDemanda(){
-  const D=UI.dem, F=D.form;
-  const tabs = `<div class="tabsrow"><div class="tabs"><span class="screen-title">Cadastro de Demanda por Recurso</span>
-    <div class="tab ${D.tab==='inserir'?'on':''}" data-demtab="inserir">Inserir</div>
-    <div class="tab ${D.tab==='listar'?'on':''}" data-demtab="listar">Listar</div></div>
-    <div class="pathead">${pacHeader(D.pac)}</div></div>`;
-  if(D.tab==='listar') return tabs + vDemList();
-  const anos=[0,1].map(i=>String(new Date().getFullYear()+i));
-  return tabs + `
-  <form id="demForm">
-  <div class="row">
-    ${fld('Tipo', sel('tipo',['Consulta','Exame','Procedimento'],F.tipo||'Consulta'))}
-    ${fld('Unidade', sel('unidade',[UNIDADE,...UNID_EXT.map(u=>u.nome)],F.unidade||UNIDADE), 560)}
-    ${fld('Data', inp('data', br(today()), 90))}
-    <label class="chk"><input type="checkbox" name="prio" ${F.prio?'checked':''}>Prioridade</label>
-  </div>
-  <div class="row">
-    ${fld('Especialidade*', sel('esp', ESPS, F.esp, 'Selecione especialidade'))}
-    ${fld('Origem', sel('origem',['Ambulatório','Pronto Socorro','Internação','Unidade Básica'],F.origem,'- Selecione -'))}
-    ${fld('Nº documento', inp('doc', F.doc, 110))}
-    ${fld('Profissional Solicitante', inp('solic', F.solic, 290))}
-    ${fld('Tipo da Consulta *', sel('tipoCons', TIPOS, F.tipoCons, '-- Selecione --'))}
-  </div>
-  <div class="row">
-    ${fld('Ano Pretendido', sel('ano', anos, F.ano, '-- Selecione --'))}
-    ${fld('Mês Pretendido', sel('mes', MESES, F.mes, '- Selecione -'))}
-    ${fld('Turno', sel('turno',['Manhã','Tarde'],F.turno,'-- Selecione'))}
-    ${fld('Observação', inp('obs', F.obs, 470))}
-  </div>
-  <div class="row">
-    ${fld('Status*', sel('st',[{v:'pendente',l:'Pendente'},{v:'agendada',l:'Agendada'},{v:'devolvida',l:'Devolvida'}],F.st,'- Selecione -'))}
-    ${fld('Unidade Indicada para Agendamento', sel('unidInd',[UNIDADE,...UNID_EXT.map(u=>u.nome)],F.unidInd,'- Selecione -'))}
-    ${fld('Aceita Teleconsulta', sel('tele',['Sim','Não'],F.tele,'- Selecione -'))}
-  </div>
-  <fieldset><div class="row" style="margin:0">
-    ${fld('CID', inp('cid', F.cid, 90))}
-    ${fld('Nome', inp('cidNome', F.cidNome, 560))}
-  </div></fieldset>
-  </form>
-  <div class="sect">Paciente</div>
-  ${patSearch('dem', D, true)}
-  <div class="right">${btn('Inserir','inserirDem','down','pri')}</div>`;
-}
-function vDemList(){
-  const f=UI.dem.filtro;
-  const list=S.demandas.filter(d=>(!f.st||d.st===f.st)&&(!f.esp||d.esp===f.esp)).sort((a,b)=>(b.prio-a.prio)||a.data.localeCompare(b.data));
-  return `<div class="row" data-filter="dem">
-    ${fld('Status', sel('st',[{v:'pendente',l:'Pendente'},{v:'agendada',l:'Agendada'},{v:'devolvida',l:'Devolvida'}],f.st,'Todos'))}
-    ${fld('Especialidade', sel('esp',ESPS,f.esp,'Todas'))}
-  </div>
-  <table class="g"><thead><tr><th>Nº</th><th>Data</th><th>Prior.</th><th>Paciente</th><th>Especialidade</th><th>Tipo</th><th>Solicitante</th><th>CID</th><th>Observação</th><th>Status</th><th></th></tr></thead><tbody>
-  ${list.length?list.map(d=>{const p=pac(d.pac); return `<tr><td>${d.id}</td><td>${br(d.data)}</td><td>${d.prio?'<b style="color:#c0282d">SIM</b>':'—'}</td>
-    <td>${p?esc(p.nome):'?'}</td><td>${d.esp}</td><td>${d.tipoCons||''}</td><td>${esc(d.solic)}</td><td>${esc(d.cid)}</td><td>${esc(d.obs)}</td>
-    <td><span class="st ${d.st}">${d.st.toUpperCase()}</span></td>
-    <td>${d.st==='pendente'?`<button class="btn" data-act="demAgendar" data-id="${d.id}">Agendar</button> <button class="btn" data-act="demDevolver" data-id="${d.id}">${ICON.x}</button>`:''}</td></tr>`}).join('')
-    :`<tr><td colspan="11" class="empty">Nenhuma demanda.</td></tr>`}
-  </tbody></table>`;
-}
-
-/* ===================== Tabelas de agendamento ===================== */
-function apptTable(list, actions){
-  if(!list.length) return `<div class="empty">Nenhum agendamento.</div>`;
-  return `<table class="g"><thead><tr><th>Data</th><th>Hora</th><th>Paciente</th><th>Profissional</th><th>Especialidade</th><th>Tipo</th><th>Chegada</th><th>Status</th>${actions?'<th class="noprint">Ações</th>':''}</tr></thead><tbody>
-  ${list.map(a=>{const p=pac(a.pac), pr=prof(a.prof); return `<tr><td>${br(a.data)}</td><td>${a.hora}</td><td>${p?p.id+' - '+esc(p.nome):'?'}</td><td>${pr.nome}</td><td>${pr.esp}</td><td>${a.tipo}</td><td>${a.chegada||''}</td>
-    <td><span class="st ${a.st}">${a.st.toUpperCase()}</span></td>${actions?`<td class="noprint">${actions(a)}</td>`:''}</tr>`}).join('')}
-  </tbody></table>`;
-}
-
-function vDiaria(){
-  const D=UI.diaria;
-  const list=S.appts.filter(a=>a.data===D.data && (!D.prof||a.prof==D.prof)).sort((a,b)=>(prof(a.prof).nome+a.hora).localeCompare(prof(b.prof).nome+b.hora));
-  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Agenda Diária</span></div></div>
-  <div class="row noprint" data-filter="diaria">
-    ${fld('Data', inp('data', D.data, 130, 'date'))}
-    ${fld('Profissional', sel('prof', PROFS.map(p=>({v:p.id,l:p.nome+' — '+p.esp})), D.prof, 'Todos'))}
-    ${btn('Imprimir','print','print')}
-  </div>
-  <p><b>${UNIDADE}</b> — ${br(D.data)} — ${list.length} agendamento(s)</p>
-  ${apptTable(list, a=> a.st==='agendado'?`<button class="btn" data-act="cancelar" data-id="${a.id}">${ICON.x}Cancelar</button>`:'')}`;
-}
-
-function vRecepcao(){
-  const t=today();
-  const list=S.appts.filter(a=>a.data===t && a.st!=='cancelado').sort((a,b)=>a.hora.localeCompare(b.hora));
-  const pres=list.filter(a=>a.st==='presente').length;
-  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Recepção — ${br(t)}</span></div><div class="pathead">${pres} de ${list.length} pacientes presentes</div></div>
-  ${apptTable(list, a=> a.st==='agendado'
-     ? `<button class="btn pri" data-act="chegada" data-id="${a.id}">${ICON.ok}Registrar chegada</button> <button class="btn" data-act="ausente" data-id="${a.id}">${ICON.x}Ausente</button>`
-     : a.st==='presente'?`<button class="btn" data-act="desfazer" data-id="${a.id}">Desfazer</button>`:'')}`;
-}
-
-function vAusentes(){
-  const t=today();
-  const list=S.appts.filter(a=>(a.data<t && a.st==='agendado')||a.st==='ausente').sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora));
-  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Ausentes</span></div></div>
-  <p class="hint">Pacientes que não compareceram (agendamentos passados sem chegada registrada).</p>
-  ${apptTable(list, a=>`${a.st==='agendado'?`<button class="btn" data-act="ausente" data-id="${a.id}">Confirmar ausência</button> `:''}<button class="btn pri" data-act="reagendar" data-id="${a.id}">Reagendar</button>`)}`;
-}
-
-function vPacientes(){
-  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Cadastro de Paciente</span></div></div>
-  ${patSearch('pac', UI.pacientes, true)}
-  <p class="hint">Clique em um paciente para editar.</p>`;
-}
-
-function vProfissionais(){
-  const nomes=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Agenda dos Profissionais</span></div></div>
-  <table class="g"><thead><tr><th>Profissional</th><th>Especialidade</th><th>Dias de atendimento</th><th>Horários</th><th>Agendados (próx. 30 dias)</th></tr></thead><tbody>
-  ${PROFS.map(p=>{const t=today(), lim=addDays(t,30); const n=S.appts.filter(a=>a.prof===p.id&&a.data>=t&&a.data<=lim&&a.st!=='cancelado').length;
-    return `<tr><td>${p.nome}</td><td>${p.esp}</td><td>${p.dias.map(d=>nomes[d]).join(', ')}</td><td>${SLOTS[0]} às 11:00 (${SLOTS.length} vagas/dia)</td><td>${n}</td></tr>`}).join('')}
-  </tbody></table>`;
-}
-
-function vConsulta(){
-  const st=UI.cons||(UI.cons={q:{},pac:null});
-  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Consulta de Agendamentos</span></div><div class="pathead">${pacHeader(st.pac)}</div></div>
-  ${patSearch('cons', st, false)}
-  ${st.pac?`<div class="sect">Histórico</div>`+apptTable(S.appts.filter(a=>a.pac==st.pac).sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora)),false):''}`;
-}
-
-function vRelatorio(){
-  const R=UI.rel||(UI.rel={de:addDays(today(),-7), ate:addDays(today(),7)});
-  const list=S.appts.filter(a=>a.data>=R.de&&a.data<=R.ate);
-  const by={}; list.forEach(a=>{const e=prof(a.prof).esp; by[e]=by[e]||{agendado:0,presente:0,ausente:0,cancelado:0}; by[e][a.st]++;});
-  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">Agendamentos por Período</span></div></div>
-  <div class="row noprint" data-filter="rel">${fld('De', inp('de',R.de,130,'date'))}${fld('Até', inp('ate',R.ate,130,'date'))}${btn('Imprimir','print','print')}</div>
-  <table class="g"><thead><tr><th>Especialidade</th><th>Agendados</th><th>Presentes</th><th>Ausentes</th><th>Cancelados</th><th>Total</th><th>Absenteísmo</th></tr></thead><tbody>
-  ${Object.keys(by).sort().map(e=>{const x=by[e], tot=x.agendado+x.presente+x.ausente+x.cancelado, ab=x.presente+x.ausente?Math.round(x.ausente*100/(x.presente+x.ausente)):0;
-    return `<tr><td>${e}</td><td>${x.agendado}</td><td>${x.presente}</td><td>${x.ausente}</td><td>${x.cancelado}</td><td><b>${tot}</b></td><td>${ab}%</td></tr>`}).join('')||'<tr><td colspan="7" class="empty">Sem dados.</td></tr>'}
-  </tbody></table>`;
-}
-
-function vPlaceholder(t){
-  return `<div class="tabsrow"><div class="tabs"><span class="screen-title">${t}</span></div></div>
-  <div class="empty" style="padding:60px">Tela não implementada nesta demonstração.</div>`;
-}
-
-/* ===================== Render / roteamento ===================== */
-const TITLES={extra:'Agendamento Extra',troca:'Troca de Paciente',solicitacoes:'Solicitações',judicial:'Ação Judicial',contato:'Fale Conosco / Help Desk'};
-function render(){
-  const v=UI.view;
-  $('#app').innerHTML =
-    v==='agenda'?vAgenda(): v==='demanda'?vDemanda(): v==='diaria'?vDiaria(): v==='recepcao'?vRecepcao():
-    v==='ausentes'?vAusentes(): v==='pacientes'?vPacientes(): v==='profissionais'?vProfissionais():
-    v==='consulta'?vConsulta(): v==='relatorio'?vRelatorio(): vPlaceholder(TITLES[v]||v);
-  document.querySelectorAll('.unidade').forEach(e=>e.textContent=UNIDADE);
-}
-function go(v){
-  if(v==='reset'){ if(confirm('Restaurar os dados de exemplo? Tudo que foi cadastrado será apagado.')){ S=seed(); save(); toast('Dados restaurados.'); } v='agenda'; }
-  UI.view=v; render(); window.scrollTo(0,0);
-}
-
-/* ===================== Modal paciente ===================== */
-function openPacModal(p, onSaved){
-  const isNew=!p; p=p||{nome:'',social:'',nasc:'',mae:'',cpf:'',cns:'',rg:'',pront:'',fone:''};
-  const ov=document.createElement('div'); ov.className='ov';
-  ov.innerHTML=`<div class="modal"><h3>${isNew?'Novo paciente':'Editar paciente — '+p.id}<span data-x>✕</span></h3>
-    <form class="mb">
-      <div class="row">${fld('Nome *',inp('nome',p.nome,420))}${fld('Nome Social',inp('social',p.social,220))}</div>
-      <div class="row">${fld('Nascimento *',inp('nasc',p.nasc,140,'date'))}${fld('CPF',inp('cpf',p.cpf,120))}${fld('CNS',inp('cns',p.cns,150))}${fld('RG',inp('rg',p.rg,110))}</div>
-      <div class="row">${fld('Filiação 1 *',inp('mae',p.mae,360))}${fld('Prontuário',inp('pront',p.pront,100))}${fld('Telefone',inp('fone',p.fone,130))}</div>
-    </form>
-    <div class="mf"><button class="btn" data-x>Cancelar</button><button class="btn pri" data-save>${ICON.ok}Salvar</button></div></div>`;
+function overlay(cls, inner){
+  const ov=document.createElement('div'); ov.className='overlay '+cls; ov.innerHTML=inner;
+  ov.addEventListener('mousedown', e=>{ if(e.target===ov) ov.remove(); });
+  ov.addEventListener('click', e=>{ if(e.target.closest('[data-close]')) ov.remove(); });
   document.body.appendChild(ov);
-  ov.addEventListener('click',e=>{
-    if(e.target.closest('[data-x]')||e.target===ov) ov.remove();
-    if(e.target.closest('[data-save]')){
-      const d=Object.fromEntries(new FormData(ov.querySelector('form')));
-      d.nome=d.nome.trim().toUpperCase(); d.mae=d.mae.trim().toUpperCase(); d.social=d.social.trim().toUpperCase();
-      if(!d.nome||!d.nasc||!d.mae) return toast('Preencha Nome, Nascimento e Filiação.', true);
-      if(isNew){ d.id=S.nextPac++; S.patients.push(d); } else Object.assign(p,d);
-      save(); ov.remove(); toast(isNew?'Paciente cadastrado: '+d.id:'Paciente atualizado.'); onSaved&&onSaved(isNew?d:p);
-    }
+  return ov;
+}
+function openModal({title, body, actions=[], wide}){
+  const ov=overlay('', `<div class="modal ${wide?'wide':''}" role="dialog" aria-modal="true"><div class="modal-h"><h3>${title}</h3><button class="icon-btn" data-close aria-label="Fechar">${ic('x')}</button></div>
+    <form class="modal-b" novalidate>${body}</form><div class="modal-f"></div></div>`);
+  const foot=$('.modal-f',ov), form=$('form',ov);
+  actions.forEach(a=>{
+    const b=document.createElement('button'); b.className='btn '+(a.cls||''); b.innerHTML=a.label; b.type='button';
+    b.onclick=()=>{ if(a.fn && a.fn(Object.fromEntries(new FormData(form)), ov)===false) return; ov.remove(); };
+    foot.appendChild(b);
   });
-  ov.querySelector('input').focus();
+  form.addEventListener('submit', e=>{ e.preventDefault(); foot.lastElementChild?.click(); });
+  setTimeout(()=>$('input:not([type=hidden]),select,textarea',ov)?.focus(), 30);
+  return ov;
+}
+function confirmBox(title, msg, okLabel, fn, danger){
+  openModal({title, body:`<p style="margin:0;color:var(--text-2)">${msg}</p>`, actions:[{label:'Voltar',cls:'ghost'},{label:okLabel,cls:danger?'danger':'primary',fn}]});
+}
+function openDrawer({title, sub='', body, submit, onSubmit, footer}){
+  const ov=overlay('drawer-ov', `<div class="drawer" role="dialog" aria-modal="true"><div class="modal-h"><div><h3>${title}</h3>${sub?`<p>${sub}</p>`:''}</div><button class="icon-btn" data-close aria-label="Fechar">${ic('x')}</button></div>
+    <form class="modal-b" novalidate>${body}</form>
+    <div class="modal-f">${footer ?? `<button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn primary" type="button" data-submit>${submit||'Salvar'}</button>`}</div></div>`);
+  const form=$('form',ov);
+  const go=()=>{ const d=Object.fromEntries(new FormData(form)); if(onSubmit && onSubmit(d, form)===false) return; ov.remove(); };
+  form.addEventListener('submit', e=>{ e.preventDefault(); go(); });
+  $('[data-submit]',ov)?.addEventListener('click', go);
+  if(onSubmit) setTimeout(()=>$('input:not([type=hidden]),select,textarea',form)?.focus(), 40);
+  return ov;
 }
 
-/* ===================== Eventos ===================== */
-// preserva o que já foi digitado no formulário de demanda antes de redesenhar a tela
-function keepDemForm(){ const f=$('#demForm'); if(f) UI.dem.form=Object.fromEntries(new FormData(f)); }
+/* =========================================================
+   Componentes de formulário
+   ========================================================= */
+const opts = (list, val, ph) => (ph!==undefined?`<option value="">${ph}</option>`:'') + list.map(o=>{const v=Array.isArray(o)?o[0]:o, l=Array.isArray(o)?o[1]:o; return `<option value="${esc(v)}" ${String(v)===String(val??'')?'selected':''}>${esc(l)}</option>`;}).join('');
+const field = (label, input, cls='') => `<div class="field ${cls}"><label>${label}</label>${input}</div>`;
+const req = l => `${l} <em>*</em>`;
+const profOpts = sel => opts(S.profs.map(p=>[p.id,title(p.nome)+' — '+p.esp]), sel, 'Todos os profissionais');
+const patRow = (p, right='') => `<div class="avatar">${initials(p.nome)}</div><div class="grow who"><div style="min-width:0"><b>${esc(title(p.nome))}${p.social?` <span class="tag blue">Nome social: ${esc(title(p.social))}</span>`:''}</b><span>Cód. ${p.id} · CPF ${cpfFmt(p.cpf)} · ${br(p.nasc)} (${age(p.nasc)} anos)</span></div></div>${right}`;
+const pickedRow = p => `<div class="list-row">${patRow(p,`<button type="button" class="btn sm ghost" data-pick-clear>Trocar</button>`)}</div>`;
+function patPicker(name, selId){
+  const p = selId && pac(selId);
+  return `<div class="picker" data-picker><input type="hidden" name="${name}" value="${p?p.id:''}">
+    <div class="picker-sel ${p?'':'hide'}">${p?pickedRow(p):''}</div>
+    <div class="picker-in ${p?'hide':''}">${ic('search',16)}<input class="input" data-picker-q placeholder="Nome, CPF, CNS ou código" autocomplete="off"><div class="dropdown hide"></div></div></div>`;
+}
+function setPicker(pk, id){
+  $('input[type=hidden]',pk).value=id;
+  $('.picker-sel',pk).innerHTML=pickedRow(pac(id));
+  $('.picker-sel',pk).classList.remove('hide'); $('.picker-in',pk).classList.add('hide');
+}
+
+/* Cadastro / edição de paciente */
+function patientForm(p, cb){
+  const isNew=!p; p=p||{};
+  openModal({ title: isNew?'Cadastrar paciente':'Editar paciente', wide:true, body:`
+    <div class="form-grid">
+      ${field(req('Nome completo'), `<input class="input" name="nome" value="${esc(p.nome)}">`,'full')}
+      ${field('Nome social', `<input class="input" name="social" value="${esc(p.social)}">`)}
+      ${field(req('Data de nascimento'), `<input class="input" type="date" name="nasc" value="${esc(p.nasc)}" max="${today()}">`)}
+      ${field('CPF', `<input class="input" name="cpf" inputmode="numeric" maxlength="14" value="${esc(p.cpf?cpfFmt(p.cpf):'')}" placeholder="000.000.000-00">`)}
+      ${field('Cartão SUS (CNS)', `<input class="input" name="cns" inputmode="numeric" maxlength="15" value="${esc(p.cns)}">`)}
+      ${field(req('Nome da mãe (Filiação 1)'), `<input class="input" name="mae" value="${esc(p.mae)}">`,'full')}
+      ${field('RG', `<input class="input" name="rg" value="${esc(p.rg)}">`)}
+      ${field('Prontuário', `<input class="input" name="pront" value="${esc(p.pront)}">`)}
+      ${field('Telefone', `<input class="input" name="fone" value="${esc(p.fone)}" placeholder="(00) 00000-0000">`)}
+      ${field('Município', `<input class="input" name="cidade" value="${esc(p.cidade||'Vale Verde')}">`)}
+    </div>`,
+    actions:[{label:'Cancelar',cls:'ghost'},{label:isNew?'Cadastrar':'Salvar alterações',cls:'primary',fn:d=>{
+      ['nome','social','mae'].forEach(k=>d[k]=d[k].trim().toUpperCase());
+      d.cpf=d.cpf.replace(/\D/g,''); d.cns=d.cns.replace(/\D/g,'');
+      if(!d.nome||!d.nasc||!d.mae){ toast('Preencha nome, data de nascimento e nome da mãe.','error'); return false; }
+      if(d.cpf && d.cpf.length!==11){ toast('O CPF deve ter 11 dígitos.','error'); return false; }
+      if(d.cpf && S.patients.some(x=>x.cpf===d.cpf && x.id!==p.id)){ toast('Já existe um paciente com este CPF.','error'); return false; }
+      if(isNew){ d.id=S.seq.pac++; S.patients.push(d); log('Paciente cadastrado: '+title(d.nome)); } else Object.assign(p,d);
+      save(); toast(isNew?`Paciente cadastrado (código ${d.id}).`:'Cadastro atualizado.'); render(); cb && cb(isNew?d:p);
+    }}]
+  });
+}
+
+/* =========================================================
+   Navegação
+   ========================================================= */
+const NAV = [
+  ['', [['dashboard','Painel','home']]],
+  ['Atendimento', [['recepcao','Recepção','clipboard'],['agenda','Agenda do dia','calendar'],['faltas','Faltas','userx']]],
+  ['Agendamento', [['agendar','Novo agendamento','calplus'],['encaixe','Encaixe','zap'],['troca','Troca de paciente','swap']]],
+  ['Regulação', [['demandas','Demandas','inbox'],['solicitacoes','Solicitações externas','send'],['judicial','Ações judiciais','scale']]],
+  ['Cadastros', [['pacientes','Pacientes','users'],['profissionais','Profissionais','steth']]],
+  ['Gestão', [['relatorios','Relatórios','chart'],['ajuda','Ajuda e suporte','help']]],
+];
+const ROUTE_INFO = Object.fromEntries(NAV.flatMap(([g,items])=>items.map(([k,l,i])=>[k,{label:l,group:g||'Início',icon:i}])));
+function counts(){
+  const t=today();
+  return {
+    recepcao: S.appts.filter(a=>a.data===t&&a.st==='presente').length,
+    demandas: S.demandas.filter(d=>d.st==='pendente').length,
+    judicial: S.jud.filter(j=>j.st==='aberta'&&diffDays(t,j.prazo)<=7).length,
+    solicitacoes: S.sol.filter(s=>s.st==='enviada').length,
+  };
+}
+function navHTML(){
+  const c=counts();
+  return NAV.map(([g,items])=>(g?`<div class="nav-g">${g}</div>`:'')+items.map(([k,l,i])=>
+    `<a class="${UI.route===k?'on':''}" data-nav="${k}" href="#${k}">${ic(i,18)}<span>${l}</span>${c[k]?`<span class="cnt ${k==='judicial'?'alert':''}">${c[k]}</span>`:''}</a>`).join('')).join('');
+}
+function nav(r){
+  UI.route=r; document.body.classList.remove('nav-open');
+  if(r==='agendar' && UI.book.done) resetBook();
+  render(); window.scrollTo(0,0);
+}
+
+/* =========================================================
+   Páginas
+   ========================================================= */
+const pageH = (h, p, actions='') => `<div class="page-h"><div><h1>${h}</h1>${p?`<p>${p}</p>`:''}</div><div class="actions">${actions}</div></div>`;
+const emptyBox = (icon, msg) => `<div class="empty">${ic(icon,40)}<div>${msg}</div></div>`;
+const kpi = (lbl, val, sub, icon, color) => `<div class="card kpi"><div class="lbl">${icon?`<span class="ico">${ic(icon,16)}</span>`:''}${lbl}</div><div class="val mono" ${color?`style="color:${color}"`:''}>${val}</div><div class="sub">${sub}</div></div>`;
+function ago(ts){ const m=Math.round((Date.now()-ts)/60000); if(m<1) return 'agora'; if(m<60) return `há ${m} min`; const h=Math.round(m/60); if(h<24) return `há ${h} h`; return `há ${Math.round(h/24)} dia(s)`; }
+function prazoTag(p){ const d=diffDays(today(),p); return `<span class="badge ${d<0?'danger':d<=7?'warn':'neutral'}">${d<0?`Vencido há ${-d}d`:d===0?'Vence hoje':`${d} dias`}</span>`; }
+
+/* ---------- Painel ---------- */
+function pDashboard(){
+  const t=today(), ap=S.appts.filter(a=>a.data===t&&a.st!=='cancelado');
+  const n = s => ap.filter(a=>a.st===s).length;
+  const pend=S.demandas.filter(d=>d.st==='pendente'), prio=pend.filter(d=>d.prio).length;
+  let free7=0; for(let i=0;i<7;i++){ const d=addDays(t,i); S.profs.forEach(p=>free7+=freeSlots(p,d).length); }
+  const h=new Date().getHours(), greet=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  const next=ap.filter(a=>a.st==='agendado'||a.st==='presente').sort(byTime).slice(0,7);
+  const fila=pend.slice().sort((a,b)=>(b.prio-a.prio)||a.data.localeCompare(b.data)).slice(0,5);
+  const occ = ESPS().map(e=>{ let tot=0, busy=0; for(let i=0;i<7;i++){ const d=addDays(t,i); S.profs.filter(p=>p.esp===e&&works(p,d)).forEach(p=>{ const s=slotsOf(p).length; tot+=s; busy+=s-freeSlots(p,d).length; }); } return [e, tot?Math.round(busy*100/tot):0]; }).sort((a,b)=>b[1]-a[1]);
+  const jud=S.jud.filter(j=>j.st==='aberta').sort((a,b)=>a.prazo.localeCompare(b.prazo)).slice(0,4);
+  return pageH(`${greet}, Usuário`, capital(longDate(t))+' · '+UNIDADE,
+      `<button class="btn" data-nav="recepcao">${ic('clipboard',16)}Recepção</button><button class="btn" data-act="newDemanda">${ic('inbox',16)}Nova demanda</button><button class="btn primary" data-nav="agendar">${ic('plus',16)}Novo agendamento</button>`)
+  + `<div class="kpis">
+      ${kpi('Agendados hoje', ap.length, `${n('atendido')} atendidos · ${n('agendado')} a chegar`, 'calendar')}
+      ${kpi('Aguardando atendimento', n('presente'), n('presente')?'Pacientes na recepção':'Nenhum paciente aguardando', 'clock')}
+      ${kpi('Demandas pendentes', pend.length, prio?`<span style="color:var(--danger);font-weight:600">${prio} prioritária(s)</span>`:'Sem prioridades', 'inbox')}
+      ${kpi('Absenteísmo (30 dias)', absRate(addDays(t,-30),addDays(t,-1))+'%', `${free7} vagas livres nos próximos 7 dias`, 'userx')}
+    </div>
+    <div class="grid g2">
+      <div class="card"><div class="card-h"><div><h3>Próximos atendimentos</h3><p>Hoje, por ordem de horário</p></div><button class="btn sm" data-nav="recepcao">Ver todos</button></div>
+        <div class="table-wrap">${next.length?`<table class="t"><tbody>${next.map(a=>{const p=pac(a.pac), pr=prof(a.prof); return `<tr>
+          <td class="mono strong" style="width:60px">${a.hora}</td>
+          <td><div class="who"><div><b>${esc(title(p.nome))}</b><span>${pr.esp} · ${title(pr.nome)}</span></div></div></td>
+          <td>${badge(a.st)}</td>
+          <td class="act">${a.st==='agendado'?`<button class="btn sm" data-act="checkin" data-id="${a.id}">${ic('login',15)}Chegada</button>`:`<button class="btn sm" data-act="finish" data-id="${a.id}">${ic('check',15)}Finalizar</button>`}</td></tr>`}).join('')}</tbody></table>`:emptyBox('calendar','Nenhum atendimento pendente hoje.')}</div></div>
+      <div class="card"><div class="card-h"><div><h3>Fila de regulação</h3><p>Prioridade e tempo de espera</p></div><button class="btn sm" data-nav="demandas">Abrir fila</button></div>
+        <div class="card-b"><div class="list">${fila.length?fila.map(d=>{const p=pac(d.pac); return `<div class="list-row" data-act="demView" data-id="${d.id}">
+          <div class="grow who"><div style="min-width:0"><b>${esc(title(p.nome))}</b><span>${d.esp} · aguardando há ${diffDays(d.data,t)} dias</span></div></div>
+          ${d.prio?'<span class="tag prio">Prioridade</span>':''}</div>`}).join(''):emptyBox('inbox','Fila vazia.')}</div></div></div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><div class="card-h"><div><h3>Ocupação da agenda</h3><p>Próximos 7 dias</p></div></div><div class="card-b">
+        ${occ.map(([e,v])=>`<div class="hbar"><span class="small" title="${e}">${e}</span><div class="bar"><i style="width:${v}%;background:${v>85?'var(--danger)':v>65?'var(--warn)':'var(--primary)'}"></i></div><span class="small mono r strong">${v}%</span></div>`).join('')}
+      </div></div>
+      <div class="card"><div class="card-h"><div><h3>Prazos judiciais</h3><p>Ações em aberto</p></div><button class="btn sm" data-nav="judicial">Ver</button></div><div class="card-b">
+        <div class="list">${jud.length?jud.map(j=>`<div class="list-row" data-act="judView" data-id="${j.id}"><div class="grow who"><div style="min-width:0"><b>${esc(title(pac(j.pac).nome))}</b><span>${j.objeto} · ${j.esp}</span></div></div>${prazoTag(j.prazo)}</div>`).join(''):emptyBox('scale','Nenhuma ação em aberto.')}</div>
+      </div></div>
+      <div class="card"><div class="card-h"><div><h3>Atividade recente</h3><p>Registro da unidade</p></div></div><div class="card-b" style="padding-top:4px;padding-bottom:4px">
+        <ul class="feed">${S.log.slice(0,6).map(l=>`<li><span class="dot"></span><div style="flex:1">${esc(l.msg)}<div class="small muted">${ago(l.ts)}</div></div></li>`).join('')}</ul>
+      </div></div>
+    </div>`;
+}
+
+/* ---------- Novo agendamento (assistente em 4 etapas) ---------- */
+function resetBook(o={}){ UI.book={step:1,q:'',pac:null,esp:'',tipo:'Primeira vez',prof:'',month:null,day:null,sel:null,obs:'',demanda:null,jud:null,preset:null,done:null,...o}; }
+function pAgendar(){
+  const B=UI.book;
+  if(B.done) return pBookDone();
+  const steps=['Paciente','Atendimento','Data e horário','Confirmação'];
+  const stepper=`<div class="stepper">${steps.map((s,i)=>{const n=i+1, cls=n===B.step?'on':n<B.step?'done':''; return `<div class="step ${cls}" ${n<B.step?`data-act="bookStep" data-n="${n}"`:''}><span class="n">${n<B.step?ic('check',14):n}</span>${s}</div>`}).join('')}</div>`;
+  let banner='';
+  if(B.demanda){ const d=S.demandas.find(x=>x.id===B.demanda); banner=`<div class="banner">${ic('inbox')}Agendando a demanda nº ${d.id} — ${esc(d.obs||d.esp)}</div>`; }
+  if(B.jud){ const j=S.jud.find(x=>x.id===B.jud); banner=`<div class="banner warn">${ic('scale')}Cumprimento de ação judicial — processo ${j.processo} · prazo ${br(j.prazo)}</div>`; }
+  if(B.preset){ const pr=prof(B.preset.prof); banner=`<div class="banner">${ic('clock')}Horário reservado: ${longDate(B.preset.day)} às ${B.preset.hora} com ${title(pr.nome)} (${pr.esp})</div>`; }
+  const body = [null,bStep1,bStep2,bStep3,bStep4][B.step]();
+  return pageH('Novo agendamento','Siga as etapas para marcar uma consulta na agenda da unidade.', (B.pac||B.esp)?`<button class="btn ghost" data-act="bookReset">${ic('undo',16)}Recomeçar</button>`:'')
+    + stepper + banner + `<div class="wiz"><div>${body}</div>${bSummary()}</div>`;
+}
+function bSummary(){
+  const B=UI.book, p=B.pac&&pac(B.pac), pr=B.sel&&prof(B.sel.prof);
+  const row=(k,v)=>`<div><dt>${k}</dt><dd>${v||'<span class="muted" style="font-weight:400">—</span>'}</dd></div>`;
+  return `<div class="card summary"><div class="card-h"><h3>Resumo</h3></div><div class="card-b"><dl class="dl">
+    ${row('Paciente', p?esc(title(p.nome))+`<div class="small muted" style="font-weight:400">Cód. ${p.id} · ${age(p.nasc)} anos</div>`:'')}
+    ${row('Especialidade', B.esp)}${row('Tipo', B.esp?B.tipo:'')}
+    ${row('Data', B.day?capital(longDate(B.day)):'')}${row('Horário', B.sel?B.sel.hora:'')}${row('Profissional', pr?title(pr.nome):'')}
+    ${row('Local', UNIDADE)}</dl></div></div>`;
+}
+function bStep1(){
+  const B=UI.book, q=B.q.trim();
+  let list = q ? searchPatients(q, 10) : [];
+  if(!q){ const seen=new Set(); S.appts.slice().sort((a,b)=>b.data.localeCompare(a.data)).forEach(a=>{ if(seen.size<6 && a.data<=today()) seen.add(a.pac); }); list=[...seen].map(pac); }
+  return `<div class="card"><div class="card-h"><div><h3>Quem será atendido?</h3><p>Busque pelo nome, CPF, CNS, código ou prontuário.</p></div><button class="btn" data-act="newPatBook">${ic('plus',16)}Novo paciente</button></div>
+    <div class="card-b"><div class="search" style="max-width:none">${ic('search',16)}<input class="input" id="bq" data-model="book.q" value="${esc(B.q)}" placeholder="Ex.: Maria Aparecida ou 123.456.789-00" autocomplete="off"></div>
+    <div class="small muted" style="margin:14px 0 8px;font-weight:600">${q?`${list.length} resultado(s)`:'Atendidos recentemente'}</div>
+    <div class="list">${list.length?list.map(p=>`<button class="list-row ${B.pac===p.id?'on':''}" data-act="bookPac" data-id="${p.id}">${patRow(p, ic('right',18))}</button>`).join(''):emptyBox('search','Nenhum paciente encontrado. Confira os dados ou cadastre um novo paciente.')}</div></div></div>`;
+}
+function bStep2(){
+  const B=UI.book, t=today();
+  const cards = ESPS().map(e=>{
+    const ps=S.profs.filter(p=>p.esp===e); let free=0;
+    for(let i=0;i<30;i++){ const d=addDays(t,i); ps.forEach(p=>free+=freeSlots(p,d).length); }
+    const ff=firstFree(e,null);
+    return `<button class="esp ${B.esp===e?'on':''}" data-act="bookEsp" data-v="${esc(e)}"><b>${e}</b><span>${ps.length} profissional(is)</span><br>
+      <span class="${free?'free':'none'}">${free?`${free} vagas em 30 dias`:'Sem vagas em 30 dias'}</span>${ff?`<span> · próxima ${brs(ff)}</span>`:''}</button>`;
+  }).join('');
+  return `<div class="card"><div class="card-h"><div><h3>Atendimento</h3><p>Escolha o tipo de consulta e a especialidade.</p></div></div><div class="card-b">
+    <div class="field" style="margin-bottom:18px"><label>Tipo de consulta</label><div class="seg">${TIPOS.map(t=>`<button data-act="bookTipo" data-v="${t}" class="${B.tipo===t?'on':''}">${t}</button>`).join('')}</div></div>
+    <div class="field"><label>Especialidade</label><div class="esp-grid">${cards}</div></div>
+    ${B.esp?`<div class="field" style="margin-top:18px;max-width:420px"><label>Profissional (opcional)</label><select class="select" id="bprof" data-model="book.prof">${opts(S.profs.filter(p=>p.esp===B.esp).map(p=>[p.id,title(p.nome)+(p.turno==='M'?' · manhã':' · tarde')]),B.prof,'Qualquer profissional')}</select></div>`:''}
+    <div class="actions" style="justify-content:flex-end;margin-top:20px"><button class="btn ghost" data-act="bookStep" data-n="1">Voltar</button><button class="btn primary" data-act="bookStep" data-n="3" ${B.esp?'':'disabled'}>Continuar ${ic('right',16)}</button></div>
+  </div></div>`;
+}
+function bStep3(){
+  const B=UI.book, t=today();
+  if(!B.month){ const ff=firstFree(B.esp,B.prof)||t; B.month=ff.slice(0,7); }
+  const [y,m]=B.month.split('-').map(Number), first=new Date(y,m-1,1).getDay(), nd=new Date(y,m,0).getDate();
+  const profs=S.profs.filter(p=>p.esp===B.esp && (!B.prof||p.id==B.prof));
+  let cells=WD.map(w=>`<div class="wd">${w}</div>`).join('')+'<div></div>'.repeat(first);
+  for(let d=1; d<=nd; d++){
+    const day=`${y}-${pad(m)}-${pad(d)}`, free=profs.reduce((s,p)=>s+freeSlots(p,day).length,0);
+    cells+=`<button class="d ${day===t?'today':''} ${B.day===day?'on':''} ${free&&free<4?'few':''}" ${free?`data-act="bookDay" data-v="${day}"`:'disabled'} aria-label="${d} de ${MESES[m-1]}: ${free} vagas">${d}${free?`<small>${free} vaga${free>1?'s':''}</small>`:''}</button>`;
+  }
+  const curM=t.slice(0,7), maxM=addDays(t,150).slice(0,7);
+  const right = B.day ? profs.filter(p=>freeSlots(p,B.day).length).map(p=>`<div class="prof-slots"><div class="who"><div class="avatar">${initials(p.nome)}</div><div><b>${title(p.nome)}</b><span>${p.crm} · ${p.turno==='M'?'Manhã':'Tarde'}</span></div></div>
+      <div class="slots">${freeSlots(p,B.day).map(h=>`<button class="slot ${B.sel&&B.sel.prof===p.id&&B.sel.hora===h?'on':''}" data-act="bookSlot" data-p="${p.id}" data-h="${h}">${h}</button>`).join('')}</div></div>`).join('')
+    : emptyBox('calendar','Selecione um dia com vagas no calendário.');
+  return `<div class="card"><div class="card-h"><div><h3>Data e horário</h3><p>${B.esp}${B.prof?' · '+title(prof(B.prof).nome):''}</p></div><button class="btn sm" data-act="bookFirst">${ic('zap',15)}Primeira data disponível</button></div>
+    <div class="card-b"><div class="grid g-eq">
+      <div><div class="cal-h"><button class="icon-btn" data-act="bookMonth" data-v="-1" ${B.month<=curM?'disabled':''} aria-label="Mês anterior">${ic('left')}</button><b>${capital(MESES[m-1])} de ${y}</b><button class="icon-btn" data-act="bookMonth" data-v="1" ${B.month>=maxM?'disabled':''} aria-label="Próximo mês">${ic('right')}</button></div>
+        <div class="cal">${cells}</div></div>
+      <div>${B.day?`<div class="strong" style="margin-bottom:4px">${capital(longDate(B.day))}</div>`:''}${right}</div>
+    </div>
+    <div class="actions" style="justify-content:flex-end;margin-top:20px"><button class="btn ghost" data-act="bookStep" data-n="2">Voltar</button><button class="btn primary" data-act="bookStep" data-n="4" ${B.sel?'':'disabled'}>Continuar ${ic('right',16)}</button></div>
+  </div></div>`;
+}
+function bStep4(){
+  const B=UI.book, p=pac(B.pac), pr=prof(B.sel.prof);
+  const same=S.appts.filter(a=>a.pac===p.id && a.data>=today() && a.st==='agendado' && prof(a.prof).esp===pr.esp);
+  return `<div class="card"><div class="card-h"><div><h3>Confirme o agendamento</h3><p>Revise os dados antes de confirmar.</p></div></div><div class="card-b">
+    ${same.length?`<div class="banner warn">${ic('alert')}Este paciente já tem ${same.length} consulta(s) futura(s) em ${pr.esp} (${same.map(a=>brs(a.data)+' '+a.hora).join(', ')}).</div>`:''}
+    <dl class="dl">
+      <div><dt>Paciente</dt><dd>${esc(title(p.nome))}</dd></div><div><dt>Código / CPF</dt><dd class="mono">${p.id} · ${cpfFmt(p.cpf)}</dd></div>
+      <div><dt>Especialidade</dt><dd>${pr.esp}</dd></div><div><dt>Tipo</dt><dd>${B.tipo}</dd></div>
+      <div><dt>Data e horário</dt><dd>${capital(longDate(B.day))} · ${B.sel.hora}</dd></div><div><dt>Profissional</dt><dd>${title(pr.nome)} · ${pr.crm}</dd></div>
+      <div><dt>Telefone para contato</dt><dd>${esc(p.fone)||'—'}</dd></div><div><dt>Local</dt><dd>${UNIDADE}</dd></div>
+    </dl>
+    <div class="field" style="margin-top:18px"><label>Observação</label><textarea class="textarea" id="bobs" data-model="book.obs" placeholder="Informações para a recepção ou para o profissional (opcional)">${esc(B.obs)}</textarea></div>
+    <div class="actions" style="justify-content:flex-end;margin-top:20px"><button class="btn ghost" data-act="bookStep" data-n="3">Voltar</button><button class="btn primary lg" data-act="bookConfirm">${ic('check',18)}Confirmar agendamento</button></div>
+  </div></div>`;
+}
+function pBookDone(){
+  const a=appt(UI.book.done), p=pac(a.pac), pr=prof(a.prof);
+  return `<div class="card" style="max-width:640px;margin:20px auto"><div class="success-box">
+    <div class="okc">${ic('check',32)}</div><h1 style="font-size:22px">Consulta agendada</h1>
+    <p class="muted">${esc(title(p.nome))} · ${pr.esp}<br><b style="color:var(--text)">${capital(longDate(a.data))} às ${a.hora}</b> com ${title(pr.nome)}</p>
+    <div class="actions" style="justify-content:center;margin-top:20px">
+      <button class="btn" data-act="receipt" data-id="${a.id}">${ic('printer',16)}Comprovante</button>
+      <button class="btn" data-act="goDay" data-v="${a.data}">${ic('calendar',16)}Ver na agenda</button>
+      <button class="btn primary" data-act="bookReset">${ic('plus',16)}Novo agendamento</button></div></div></div>`;
+}
+
+/* ---------- Recepção ---------- */
+function statusActions(a){
+  if(a.st==='agendado') return `<button class="btn sm ok" data-act="checkin" data-id="${a.id}">${ic('login',15)}Registrar chegada</button><button class="btn sm danger" data-act="falta" data-id="${a.id}">Falta</button>`;
+  if(a.st==='presente') return `<button class="btn sm primary" data-act="finish" data-id="${a.id}">${ic('check',15)}Finalizar</button><button class="btn sm ghost" data-act="undo" data-id="${a.id}" title="Desfazer chegada" aria-label="Desfazer chegada">${ic('undo',15)}</button>`;
+  if(a.st==='ausente'||a.st==='atendido') return `<button class="btn sm ghost" data-act="undo" data-id="${a.id}" title="Desfazer" aria-label="Desfazer">${ic('undo',15)}</button>`;
+  return '';
+}
+function pRecepcao(){
+  const t=today(), R=UI.rec, all=S.appts.filter(a=>a.data===t&&a.st!=='cancelado').sort(byTime);
+  const F={todos:['Todos',()=>true],agendado:['A chegar',a=>a.st==='agendado'],presente:['Aguardando',a=>a.st==='presente'],atendido:['Atendidos',a=>a.st==='atendido'],ausente:['Faltas',a=>a.st==='ausente']};
+  const q=norm(R.q);
+  const list=all.filter(F[R.f][1]).filter(a=>{ if(!q) return true; const p=pac(a.pac), pr=prof(a.prof); return norm(p.nome+' '+p.id+' '+p.cpf+' '+pr.nome+' '+pr.esp).includes(q); });
+  const wait = a => { if(a.st!=='presente'||!a.chegada) return ''; const [h,m]=a.chegada.split(':').map(Number), n=new Date(), w=n.getHours()*60+n.getMinutes()-(h*60+m); return w>0?`<div class="small" style="color:${w>45?'var(--danger)':'var(--warn)'}">aguardando ${w} min</div>`:''; };
+  return pageH('Recepção', `${capital(longDate(t))} · registre chegadas e faltas e finalize atendimentos.`,
+      `<button class="btn" data-nav="encaixe">${ic('zap',16)}Encaixe</button><button class="btn primary" data-nav="agendar">${ic('plus',16)}Agendar</button>`)
+   + `<div class="card"><div class="toolbar">
+       <div class="seg">${Object.entries(F).map(([k,[l,f]])=>`<button data-act="setRec" data-v="${k}" class="${R.f===k?'on':''}">${l}<span class="n">${all.filter(f).length}</span></button>`).join('')}</div>
+       <span class="sp"></span><div class="search">${ic('search',16)}<input class="input" id="rq" data-model="rec.q" value="${esc(R.q)}" placeholder="Filtrar paciente ou profissional"></div></div>
+     <div class="table-wrap">${list.length?`<table class="t"><thead><tr><th>Horário</th><th>Paciente</th><th>Especialidade / profissional</th><th>Tipo</th><th>Chegada</th><th>Situação</th><th></th></tr></thead><tbody>
+       ${list.map(a=>{const p=pac(a.pac), pr=prof(a.prof); return `<tr>
+         <td class="mono strong">${a.hora}${a.extra?' <span class="tag">Encaixe</span>':''}</td>
+         <td><div class="who" data-act="openPatient" data-id="${p.id}" style="cursor:pointer"><div class="avatar">${initials(p.nome)}</div><div><b>${esc(title(p.nome))}</b><span>${age(p.nasc)} anos · Cód. ${p.id}</span></div></div></td>
+         <td><div class="who"><div><b style="font-weight:500">${pr.esp}</b><span>${title(pr.nome)}</span></div></div></td>
+         <td>${a.tipo}</td><td class="mono">${a.chegada||'—'}${wait(a)}</td><td>${badge(a.st)}</td>
+         <td class="act">${statusActions(a)}<button class="btn sm ghost" data-act="openAppt" data-id="${a.id}" title="Detalhes" aria-label="Detalhes">${ic('more',16)}</button></td></tr>`}).join('')}
+     </tbody></table>`:emptyBox('clipboard','Nenhum atendimento neste filtro.')}</div></div>`;
+}
+
+/* ---------- Agenda do dia ---------- */
+function pAgenda(){
+  const A=UI.day, t=today(), nh=nowHM();
+  const profs=S.profs.filter(p=>(!A.prof||p.id==A.prof)&&works(p,A.date));
+  const blocked=S.profs.filter(p=>(!A.prof||p.id==A.prof)&&p.bloqueios.some(b=>b.data===A.date));
+  const cards=profs.map(p=>{
+    const ap=S.appts.filter(a=>a.prof===p.id&&a.data===A.date&&a.st!=='cancelado');
+    const rows=slotsOf(p).map(h=>({h, a:ap.find(a=>a.hora===h&&!a.extra)})).concat(ap.filter(a=>a.extra).map(a=>({h:a.hora,a}))).sort((x,y)=>x.h.localeCompare(y.h));
+    const tot=slotsOf(p).length, busy=rows.filter(r=>r.a&&!r.a.extra).length;
+    return `<div class="card"><div class="card-h"><div class="who"><div class="avatar">${initials(p.nome)}</div><div><b>${title(p.nome)}</b><span>${p.esp} · ${p.turno==='M'?'Manhã':'Tarde'}</span></div></div>
+      <div style="text-align:right;min-width:90px"><div class="small strong mono">${busy}/${tot}</div><div class="bar" style="margin-top:4px"><i style="width:${busy*100/tot}%;background:var(--primary)"></i></div></div></div>
+      <div>${rows.map(({h,a})=>{ const past=A.date<t||(A.date===t&&h<nh);
+        if(!a) return `<div class="srow free ${past?'past':''}"><span class="h">${h}</span><span class="grow">Horário livre</span>${!past?`<button class="btn sm" data-act="slotBook" data-p="${p.id}" data-h="${h}">${ic('plus',14)}Agendar</button>`:''}</div>`;
+        const pa=pac(a.pac); return `<div class="srow booked" data-act="openAppt" data-id="${a.id}"><span class="h">${h}</span><span class="grow who"><span style="min-width:0"><b>${esc(title(pa.nome))}</b><span>${a.tipo}${a.extra?' · Encaixe':''}</span></span></span>${badge(a.st)}</div>`;}).join('')}</div></div>`;
+  }).join('');
+  return pageH('Agenda do dia', capital(longDate(A.date)),
+     `<div class="day-nav"><button class="icon-btn" data-act="dayNav" data-v="-1" aria-label="Dia anterior">${ic('left')}</button><input type="date" class="input" style="width:160px" id="dd" data-model="day.date" value="${A.date}"><button class="icon-btn" data-act="dayNav" data-v="1" aria-label="Próximo dia">${ic('right')}</button><button class="btn" data-act="dayNav" data-v="0">Hoje</button></div>
+      <select class="select" style="width:260px" id="dp" data-model="day.prof">${profOpts(A.prof)}</select>
+      <button class="btn" data-act="print">${ic('printer',16)}Imprimir</button>`)
+   + (blocked.length?`<div class="banner warn">${ic('lock')}Agenda bloqueada: ${blocked.map(p=>title(p.nome)+' ('+esc(p.bloqueios.find(b=>b.data===A.date).motivo)+')').join(', ')}</div>`:'')
+   + (profs.length?`<div class="sched">${cards}</div>`:`<div class="card">${emptyBox('calendar','Nenhum profissional atende nesta data.')}</div>`);
+}
+
+/* ---------- Faltas ---------- */
+function pFaltas(){
+  const t=today(), de=addDays(t,-UI.aus.days);
+  const list=S.appts.filter(a=>a.data>=de && a.data<=t && (a.st==='ausente' || (a.st==='agendado' && a.data<t))).sort((a,b)=>byTime(b,a));
+  const semReg=list.filter(a=>a.st==='agendado').length;
+  return pageH('Faltas', 'Pacientes que não compareceram. Registre o contato e reagende quando necessário.',
+     `<div class="seg">${[7,30,90].map(d=>`<button data-act="setAus" data-v="${d}" class="${UI.aus.days===d?'on':''}">${d} dias</button>`).join('')}</div>`)
+   + `<div class="kpis">
+       ${kpi('Faltas no período', list.length-semReg, 'Confirmadas')}
+       ${kpi('Sem registro de chegada', semReg, 'Aguardando confirmação', '', semReg?'var(--warn)':'')}
+       ${kpi('Taxa de absenteísmo', absRate(de,addDays(t,-1))+'%', 'Faltas sobre atendimentos previstos')}
+     </div>
+     <div class="card"><div class="table-wrap">${list.length?`<table class="t"><thead><tr><th>Data</th><th>Paciente</th><th>Telefone</th><th>Especialidade</th><th>Situação</th><th>Contato</th><th></th></tr></thead><tbody>
+     ${list.map(a=>{const p=pac(a.pac), pr=prof(a.prof); return `<tr>
+       <td class="mono">${br(a.data)}<div class="small muted">${a.hora}</div></td>
+       <td><div class="who" data-act="openPatient" data-id="${p.id}" style="cursor:pointer"><div class="avatar">${initials(p.nome)}</div><div><b>${esc(title(p.nome))}</b><span>Cód. ${p.id}</span></div></div></td>
+       <td class="mono">${esc(p.fone)}</td><td>${pr.esp}<div class="small muted">${title(pr.nome)}</div></td>
+       <td>${a.st==='agendado'?'<span class="badge warn">Sem registro</span>':badge(a.st)}</td>
+       <td>${a.contato?`<span class="small">${esc(a.contato)}</span>`:'<span class="muted small">—</span>'}</td>
+       <td class="act">${a.st==='agendado'?`<button class="btn sm" data-act="falta" data-id="${a.id}">Confirmar falta</button>`:''}<button class="btn sm" data-act="contato" data-id="${a.id}">${ic('phone',14)}Contato</button><button class="btn sm primary" data-act="reagendar" data-id="${a.id}">Reagendar</button></td></tr>`}).join('')}
+     </tbody></table>`:emptyBox('userx','Nenhuma falta no período.')}</div></div>`;
+}
+
+/* ---------- Encaixe ---------- */
+function pEncaixe(){
+  const t=today();
+  const list=S.appts.filter(a=>a.extra&&a.data>=t&&a.st!=='cancelado').sort(byTime);
+  return pageH('Encaixe', 'Agendamento extra, fora das vagas regulares. Use apenas em situações justificadas.')
+   + `<div class="grid g-eq"><div class="card"><div class="card-h"><h3>Novo encaixe</h3></div><form class="card-b" data-form="encaixe" novalidate><div class="form-grid">
+       ${field(req('Paciente'), patPicker('pac'), 'full')}
+       ${field(req('Profissional'), `<select class="select" name="prof">${opts(S.profs.map(p=>[p.id,title(p.nome)+' — '+p.esp]),'','Selecione')}</select>`,'full')}
+       ${field(req('Data'), `<input type="date" class="input" name="data" value="${t}" min="${t}">`)}
+       ${field(req('Horário'), `<input type="time" class="input" name="hora" step="300" value="11:00">`)}
+       ${field('Tipo', `<select class="select" name="tipo">${opts(TIPOS,'Retorno')}</select>`)}
+       ${field(req('Justificativa'), `<select class="select" name="motivo">${opts(['Urgência clínica','Determinação judicial','Pós-alta hospitalar','Remanejamento','Solicitação da direção'],'','Selecione')}</select>`)}
+       ${field('Observação', `<textarea class="textarea" name="obs" placeholder="Detalhe a justificativa"></textarea>`,'full')}
+     </div><div class="actions" style="justify-content:flex-end;margin-top:18px"><button class="btn primary" type="submit">${ic('zap',16)}Registrar encaixe</button></div></form></div>
+     <div class="card"><div class="card-h"><div><h3>Encaixes programados</h3><p>A partir de hoje</p></div></div><div class="table-wrap">${list.length?`<table class="t"><tbody>${list.map(a=>{const p=pac(a.pac), pr=prof(a.prof); return `<tr class="click" data-act="openAppt" data-id="${a.id}"><td class="mono">${brs(a.data)}<div class="small muted">${a.hora}</div></td><td><b>${esc(title(p.nome))}</b><div class="small muted">${pr.esp} · ${esc(a.motivo||'')}</div></td><td>${badge(a.st)}</td></tr>`}).join('')}</tbody></table>`:emptyBox('zap','Nenhum encaixe programado.')}</div></div></div>`;
+}
+
+/* ---------- Troca de paciente ---------- */
+function pTroca(){
+  const T=UI.troca;
+  const list=S.appts.filter(a=>a.data===T.date && a.st==='agendado' && (!T.prof||a.prof==T.prof)).sort(byTime);
+  return pageH('Troca de paciente', 'Substitui o paciente de um horário já agendado, mantendo data, horário e profissional.')
+   + `<form class="grid g-eq" data-form="troca" novalidate>
+      <div class="card"><div class="card-h"><div><h3>1. Horário a ser trocado</h3><p>Somente agendamentos ainda não atendidos</p></div></div>
+        <div class="toolbar"><input type="date" class="input" style="width:170px" id="td" data-model="troca.date" value="${T.date}" min="${today()}">
+          <select class="select" style="flex:1;min-width:180px" id="tp" data-model="troca.prof">${profOpts(T.prof)}</select></div>
+        <div class="card-b"><div class="list" style="max-height:440px;overflow:auto">${list.length?list.map(a=>{const p=pac(a.pac), pr=prof(a.prof); return `<label class="list-row"><input type="radio" name="appt" value="${a.id}"><span class="mono strong">${a.hora}</span><span class="grow who"><span style="min-width:0"><b>${esc(title(p.nome))}</b><span>${pr.esp} · ${title(pr.nome)}</span></span></span></label>`}).join(''):emptyBox('calendar','Nenhum agendamento disponível para troca.')}</div></div></div>
+      <div class="card"><div class="card-h"><h3>2. Novo paciente</h3></div><div class="card-b"><div class="form-grid">
+        ${field(req('Paciente que assumirá o horário'), patPicker('novo'),'full')}
+        ${field(req('Motivo da troca'), `<select class="select" name="motivo">${opts(['Desistência do paciente','Remanejamento por prioridade','Erro de cadastro','Óbito','Outro'],'','Selecione')}</select>`,'full')}
+        ${field('Observação', `<textarea class="textarea" name="obs"></textarea>`,'full')}
+        </div><div class="actions" style="justify-content:flex-end;margin-top:18px"><button class="btn primary" type="submit">${ic('swap',16)}Confirmar troca</button></div>
+        ${S.trocas.length?`<div class="sec-t" style="margin-top:24px">Últimas trocas</div><ul class="feed">${S.trocas.slice(0,5).map(x=>`<li><span class="dot"></span><div><b>${esc(title(pac(x.de).nome))}</b> → <b>${esc(title(pac(x.para).nome))}</b><div class="small muted">${br(x.data)} ${x.hora} · ${esc(x.motivo)}</div></div></li>`).join('')}</ul>`:''}
+      </div></div></form>`;
+}
+
+/* ---------- Demandas ---------- */
+function pDemandas(){
+  const M=UI.dem, t=today(), q=norm(M.q);
+  const base=S.demandas.filter(d=>(!M.esp||d.esp===M.esp)&&(!q||norm(pac(d.pac).nome+' '+d.id+' '+d.cid+' '+d.solic).includes(q)));
+  const tabs={pendente:'Pendentes',agendada:'Agendadas',devolvida:'Devolvidas',todas:'Todas'};
+  const list=base.filter(d=>M.tab==='todas'||d.st===M.tab).sort((a,b)=>(b.st==='pendente')-(a.st==='pendente')||(b.prio-a.prio)||a.data.localeCompare(b.data));
+  return pageH('Demandas por recurso','Fila de pacientes aguardando vaga. Prioridades e maior tempo de espera aparecem primeiro.',
+      `<button class="btn primary" data-act="newDemanda">${ic('plus',16)}Nova demanda</button>`)
+   + `<div class="card"><div class="toolbar">
+       <div class="seg">${Object.entries(tabs).map(([k,l])=>`<button data-act="setDem" data-v="${k}" class="${M.tab===k?'on':''}">${l}<span class="n">${k==='todas'?base.length:base.filter(d=>d.st===k).length}</span></button>`).join('')}</div>
+       <span class="sp"></span>
+       <select class="select" style="width:230px" id="de" data-model="dem.esp">${opts(ESPS(),M.esp,'Todas as especialidades')}</select>
+       <div class="search">${ic('search',16)}<input class="input" id="dq" data-model="dem.q" value="${esc(M.q)}" placeholder="Paciente, nº, CID ou solicitante"></div></div>
+     <div class="table-wrap">${list.length?`<table class="t"><thead><tr><th>Nº</th><th>Paciente</th><th>Especialidade</th><th>Origem</th><th>Espera</th><th>Situação</th><th></th></tr></thead><tbody>
+     ${list.map(d=>{const p=pac(d.pac), w=diffDays(d.data,t); return `<tr class="click" data-act="demView" data-id="${d.id}">
+       <td class="mono muted">#${d.id}</td>
+       <td><div class="who"><div class="avatar">${initials(p.nome)}</div><div style="min-width:0"><b>${esc(title(p.nome))} ${d.prio?'<span class="tag prio">Prioridade</span>':''}</b><span>${d.cid?esc(d.cid)+' · ':''}${esc(d.obs)}</span></div></div></td>
+       <td>${d.esp}<div class="small muted">${d.tipoCons}</div></td><td>${esc(d.origem)}<div class="small muted">${esc(d.solic)}</div></td>
+       <td class="mono"><span style="color:${d.st==='pendente'&&w>30?'var(--danger)':'inherit'};font-weight:600">${w} dias</span><div class="small muted">desde ${brs(d.data)}</div></td>
+       <td>${badge(d.st)}</td>
+       <td class="act">${d.st==='pendente'?`<button class="btn sm primary" data-act="demAgendar" data-id="${d.id}">Agendar</button><button class="btn sm" data-act="demDevolver" data-id="${d.id}">Devolver</button>`:''}</td></tr>`}).join('')}
+     </tbody></table>`:emptyBox('inbox','Nenhuma demanda encontrada.')}</div></div>`;
+}
+
+/* ---------- Solicitações externas ---------- */
+function pSolicitacoes(){
+  const tabs={todas:'Todas',enviada:'Aguardando',aceita:'Aceitas',recusada:'Recusadas'};
+  const list=S.sol.filter(s=>UI.sol.tab==='todas'||s.st===UI.sol.tab).sort((a,b)=>b.id-a.id);
+  return pageH('Solicitações externas','Pedidos de vaga em outras unidades da rede (agenda externa).',`<button class="btn primary" data-act="newSol">${ic('send',16)}Nova solicitação</button>`)
+   + `<div class="card"><div class="toolbar"><div class="seg">${Object.entries(tabs).map(([k,l])=>`<button data-act="setSol" data-v="${k}" class="${UI.sol.tab===k?'on':''}">${l}<span class="n">${k==='todas'?S.sol.length:S.sol.filter(s=>s.st===k).length}</span></button>`).join('')}</div></div>
+     <div class="table-wrap">${list.length?`<table class="t"><thead><tr><th>Nº</th><th>Paciente</th><th>Especialidade</th><th>Unidade de destino</th><th>Enviada</th><th>Situação</th><th>Resposta</th><th></th></tr></thead><tbody>
+     ${list.map(s=>{const p=pac(s.pac); return `<tr><td class="mono muted">#${s.id}</td><td><b>${esc(title(p.nome))}</b><div class="small muted">Cód. ${p.id}</div></td><td>${s.esp}</td><td>${s.unidade}</td><td class="mono">${br(s.data)}</td><td>${badge(s.st)}</td>
+       <td class="small">${s.st==='aceita'?`Agendado para <b>${br(s.resposta.slice(0,10))}</b> às ${s.resposta.slice(11)}`:esc(s.resposta)||'<span class="muted">—</span>'}</td>
+       <td class="act">${s.st==='enviada'?`<button class="btn sm" data-act="solResp" data-id="${s.id}">Simular resposta</button><button class="btn sm ghost danger" data-act="solCancel" data-id="${s.id}">Cancelar</button>`:''}</td></tr>`}).join('')}
+     </tbody></table>`:emptyBox('send','Nenhuma solicitação.')}</div></div>`;
+}
+
+/* ---------- Ações judiciais ---------- */
+function pJudicial(){
+  const list=S.jud.slice().sort((a,b)=>(a.st==='cumprida')-(b.st==='cumprida')||a.prazo.localeCompare(b.prazo));
+  return pageH('Ações judiciais','Determinações judiciais com prazo para cumprimento.',`<button class="btn primary" data-act="newJud">${ic('plus',16)}Registrar ação</button>`)
+   + `<div class="card"><div class="table-wrap">${list.length?`<table class="t"><thead><tr><th>Processo</th><th>Paciente</th><th>Objeto</th><th>Prazo</th><th>Situação</th><th></th></tr></thead><tbody>
+     ${list.map(j=>{const p=pac(j.pac); return `<tr class="click" data-act="judView" data-id="${j.id}"><td class="mono small">${esc(j.processo)}<div class="muted">${esc(j.vara)}</div></td><td><b>${esc(title(p.nome))}</b><div class="small muted">Cód. ${p.id}</div></td>
+       <td>${j.objeto}<div class="small muted">${j.esp}</div></td><td class="mono">${br(j.prazo)}<div>${j.st==='aberta'?prazoTag(j.prazo):''}</div></td><td>${badge(j.st)}</td>
+       <td class="act">${j.st==='aberta'?`${j.objeto==='Consulta'?`<button class="btn sm primary" data-act="judAgendar" data-id="${j.id}">Agendar</button>`:''}<button class="btn sm" data-act="judDone" data-id="${j.id}">Marcar cumprida</button>`:''}</td></tr>`}).join('')}
+     </tbody></table>`:emptyBox('scale','Nenhuma ação registrada.')}</div></div>`;
+}
+
+/* ---------- Pacientes ---------- */
+function pPacientes(){
+  const q=UI.pac.q.trim(), t=today();
+  const list=(q?searchPatients(q,500):S.patients.slice()).sort((a,b)=>a.nome.localeCompare(b.nome));
+  return pageH('Pacientes',`${S.patients.length} pacientes cadastrados`,`<button class="btn primary" data-act="newPatient">${ic('plus',16)}Cadastrar paciente</button>`)
+   + `<div class="card"><div class="toolbar"><div class="search" style="max-width:480px">${ic('search',16)}<input class="input" id="pq" data-model="pac.q" value="${esc(UI.pac.q)}" placeholder="Nome, CPF, CNS, código ou prontuário"></div></div>
+     <div class="table-wrap">${list.length?`<table class="t"><thead><tr><th>Paciente</th><th>CPF</th><th>Cartão SUS</th><th>Nascimento</th><th>Telefone</th><th>Próxima consulta</th></tr></thead><tbody>
+     ${list.map(p=>{const nx=S.appts.filter(a=>a.pac===p.id&&a.data>=t&&a.st==='agendado').sort(byTime)[0]; return `<tr class="click" data-act="openPatient" data-id="${p.id}">
+       <td><div class="who"><div class="avatar">${initials(p.nome)}</div><div><b>${esc(title(p.nome))}</b><span>Cód. ${p.id} · Pront. ${esc(p.pront)||'—'}</span></div></div></td>
+       <td class="mono">${cpfFmt(p.cpf)}</td><td class="mono small">${esc(p.cns)||'—'}</td><td class="mono">${br(p.nasc)}<div class="small muted">${age(p.nasc)} anos</div></td><td class="mono">${esc(p.fone)||'—'}</td>
+       <td>${nx?`${brs(nx.data)} ${nx.hora}<div class="small muted">${prof(nx.prof).esp}</div>`:'<span class="muted">—</span>'}</td></tr>`}).join('')}
+     </tbody></table>`:emptyBox('users','Nenhum paciente encontrado.')}</div></div>`;
+}
+
+/* ---------- Profissionais ---------- */
+function pProfissionais(){
+  const t=today();
+  return pageH('Profissionais','Escala de atendimento, ocupação e bloqueios de agenda.')
+   + `<div class="sched">${S.profs.map(p=>{
+       let tot=0, busy=0; for(let i=0;i<7;i++){ const d=addDays(t,i); if(works(p,d)){ const s=slotsOf(p).length; tot+=s; busy+=s-freeSlots(p,d).length; } }
+       const occ=tot?Math.round(busy*100/tot):0, bl=p.bloqueios.filter(b=>b.data>=t).sort((a,b)=>a.data.localeCompare(b.data));
+       return `<div class="card prof-card"><div class="card-b"><div class="prof-top"><div class="avatar lg">${initials(p.nome)}</div><div style="min-width:0"><b style="font-size:15px">${title(p.nome)}</b><div class="small muted">${p.esp} · ${p.crm}</div></div></div>
+         <div class="chips" style="margin-top:14px">${[1,2,3,4,5].map(d=>`<span class="tag ${p.dias.includes(d)?'blue':''}" style="${p.dias.includes(d)?'':'opacity:.45'}">${WD[d]}</span>`).join('')}<span class="tag">${p.turno==='M'?'07:00–12:00':'13:00–17:00'}</span></div>
+         <div style="margin-top:14px"><div class="small muted" style="display:flex;justify-content:space-between"><span>Ocupação nos próximos 7 dias</span><b class="mono" style="color:var(--text)">${occ}%</b></div><div class="bar" style="margin-top:6px"><i style="width:${occ}%;background:${occ>85?'var(--danger)':'var(--primary)'}"></i></div></div>
+         ${bl.length?`<div style="margin-top:14px"><div class="small muted" style="margin-bottom:6px">Bloqueios</div><div class="chips">${bl.map(b=>`<span class="tag" style="background:var(--warn-bg);color:var(--warn)">${brs(b.data)} · ${esc(b.motivo)} <a style="cursor:pointer;margin-left:4px" data-act="unblock" data-p="${p.id}" data-v="${b.data}" title="Remover bloqueio">✕</a></span>`).join('')}</div></div>`:''}
+       </div><div class="card-f"><button class="btn sm ghost" data-act="block" data-p="${p.id}">${ic('lock',14)}Bloquear data</button><button class="btn sm" data-act="profAgenda" data-p="${p.id}">${ic('calendar',14)}Ver agenda</button></div></div>`;
+     }).join('')}</div>`;
+}
+
+/* ---------- Relatórios ---------- */
+function pRelatorios(){
+  const R=UI.rel, list=S.appts.filter(a=>a.data>=R.de&&a.data<=R.ate);
+  const c = s => list.filter(a=>a.st===s).length;
+  const real=c('atendido')+c('ausente');
+  const COLS=[['atendido','var(--success)'],['ausente','var(--danger)'],['agendado','var(--primary)'],['presente','var(--warn)'],['cancelado','var(--border-2)']];
+  const byE=ESPS().map(e=>{ const l=list.filter(a=>prof(a.prof).esp===e); return [e, l.length, Object.fromEntries(COLS.map(([s])=>[s,l.filter(a=>a.st===s).length]))]; });
+  const max=Math.max(1,...byE.map(x=>x[1]));
+  const byP=S.profs.map(p=>{ const l=list.filter(a=>a.prof===p.id), at=l.filter(a=>a.st==='atendido').length, au=l.filter(a=>a.st==='ausente').length; return {p, tot:l.length, at, au, abs:at+au?Math.round(au*100/(at+au)):0}; }).sort((a,b)=>b.tot-a.tot);
+  return pageH('Relatórios', `Período de ${br(R.de)} a ${br(R.ate)}`,
+      `<div class="seg no-print">${[[7,'7 dias'],[30,'30 dias'],[90,'90 dias']].map(([d,l])=>`<button data-act="relPreset" data-v="${d}" class="${R.preset===d?'on':''}">${l}</button>`).join('')}</div>
+       <input type="date" class="input no-print" style="width:150px" id="rd" data-model="rel.de" value="${R.de}" aria-label="Data inicial"><input type="date" class="input no-print" style="width:150px" id="ra" data-model="rel.ate" value="${R.ate}" aria-label="Data final">
+       <button class="btn no-print" data-act="csv">${ic('download',16)}Exportar CSV</button><button class="btn no-print" data-act="print">${ic('printer',16)}Imprimir</button>`)
+   + `<div class="kpis">
+      ${kpi('Agendamentos', list.length, `${list.filter(a=>a.extra).length} encaixe(s)`)}
+      ${kpi('Comparecimento', (real?Math.round(c('atendido')*100/real):0)+'%', `${c('atendido')} atendidos`, '', 'var(--success)')}
+      ${kpi('Absenteísmo', (real?Math.round(c('ausente')*100/real):0)+'%', `${c('ausente')} faltas`, '', 'var(--danger)')}
+      ${kpi('Cancelamentos', c('cancelado'), `${list.length?Math.round(c('cancelado')*100/list.length):0}% do total`)}
+    </div>
+    <div class="grid g-eq">
+      <div class="card"><div class="card-h"><div><h3>Agendamentos por especialidade</h3><p>Distribuição por situação</p></div></div><div class="card-b">
+        <div class="legend" style="margin-bottom:12px">${COLS.map(([s,col])=>`<span style="--c:${col}">${ST[s][0]}</span>`).join('')}</div>
+        ${byE.map(([e,tot,st])=>`<div class="hbar"><span class="small" title="${e}">${e}</span><div><div class="bar" style="height:14px;width:${tot*100/max}%;min-width:2px">${COLS.map(([s,col])=>st[s]?`<i title="${ST[s][0]}: ${st[s]}" style="width:${st[s]*100/tot}%;background:${col}"></i>`:'').join('')}</div></div><span class="small mono r strong">${tot}</span></div>`).join('')}
+      </div></div>
+      <div class="card"><div class="card-h"><div><h3>Por profissional</h3></div></div><div class="table-wrap"><table class="t"><thead><tr><th>Profissional</th><th class="r">Total</th><th class="r">Atendidos</th><th class="r">Faltas</th><th class="r">Absent.</th></tr></thead><tbody>
+        ${byP.map(x=>`<tr><td><b style="font-weight:500">${title(x.p.nome)}</b><div class="small muted">${x.p.esp}</div></td><td class="r mono">${x.tot}</td><td class="r mono">${x.at}</td><td class="r mono">${x.au}</td><td class="r mono" style="color:${x.abs>15?'var(--danger)':'inherit'}">${x.abs}%</td></tr>`).join('')}
+      </tbody></table></div></div>
+    </div>`;
+}
+
+/* ---------- Ajuda ---------- */
+function pAjuda(){
+  const faq=[
+    ['Como agendar uma consulta?','Acesse "Novo agendamento", busque o paciente, escolha a especialidade, selecione um dia com vagas no calendário e o horário desejado. Revise e confirme. O comprovante pode ser impresso ao final.'],
+    ['Como registrar a chegada do paciente?','Na tela "Recepção", localize o paciente do dia e clique em "Registrar chegada". Ao término da consulta, use "Finalizar".'],
+    ['O que fazer quando não há vaga?','Cadastre uma "Demanda" com a especialidade e a justificativa. Ela entra na fila de regulação e pode ser agendada assim que surgir vaga. Também é possível pedir vaga em outra unidade em "Solicitações externas".'],
+    ['Quando usar o encaixe?','Somente em situações justificadas (urgência clínica, determinação judicial, pós-alta). O encaixe não ocupa vaga regular da agenda.'],
+    ['O que acontece ao bloquear a agenda de um profissional?','Os pacientes agendados na data são cancelados automaticamente e entram na fila de demandas com prioridade, para serem reagendados.'],
+    ['Onde ficam salvos os dados?','Esta é uma demonstração: os dados são fictícios e ficam salvos apenas neste navegador. Use "Restaurar dados de exemplo" no menu lateral para recomeçar.'],
+  ];
+  return pageH('Ajuda e suporte','Dúvidas frequentes e abertura de chamados.')
+   + `<div class="grid g2"><div class="card"><div class="card-h"><h3>Perguntas frequentes</h3></div><div class="card-b faq" style="padding-top:0;padding-bottom:0">${faq.map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div></div>
+     <div class="stack"><div class="card"><div class="card-h"><div><h3>Abrir chamado</h3><p>Atendimento 24 horas</p></div></div><form class="card-b" data-form="ticket" novalidate><div class="form-grid">
+       ${field(req('Assunto'), `<select class="select" name="assunto">${opts(['Erro no sistema','Dúvida de uso','Acesso e senha','Cadastro de profissional','Outro'],'','Selecione')}</select>`,'full')}
+       ${field(req('Descrição'), `<textarea class="textarea" name="desc" placeholder="Descreva o que aconteceu"></textarea>`,'full')}
+       </div><div class="actions" style="justify-content:flex-end;margin-top:14px"><button class="btn primary" type="submit">${ic('send',16)}Enviar</button></div></form></div>
+       <div class="card"><div class="card-b small"><div class="strong" style="margin-bottom:6px">Help Desk (fictício)</div><div class="muted">suporte@exemplo.com<br>(00) 0000-0000 · opção 1</div>
+       ${S.tickets.length?`<div class="sec-t" style="margin-top:16px">Seus chamados</div><ul class="feed">${S.tickets.map(k=>`<li><div style="flex:1"><b>${k.protocolo}</b> · ${esc(k.assunto)}<div class="muted">${br(k.data)}</div></div>${badge(k.st)}</li>`).join('')}</ul>`:''}</div></div></div></div>`;
+}
+
+const PAGES={dashboard:pDashboard, agendar:pAgendar, recepcao:pRecepcao, agenda:pAgenda, faltas:pFaltas, encaixe:pEncaixe, troca:pTroca,
+  demandas:pDemandas, solicitacoes:pSolicitacoes, judicial:pJudicial, pacientes:pPacientes, profissionais:pProfissionais, relatorios:pRelatorios, ajuda:pAjuda};
+
+/* =========================================================
+   Gavetas de detalhe
+   ========================================================= */
+function openPatient(id){
+  const p=pac(id), t=today();
+  const fut=S.appts.filter(a=>a.pac===id&&a.data>=t&&a.st!=='cancelado').sort(byTime);
+  const past=S.appts.filter(a=>a.pac===id&&(a.data<t||a.st==='cancelado')).sort((a,b)=>byTime(b,a)).slice(0,8);
+  const dem=S.demandas.filter(d=>d.pac===id);
+  const row=a=>{const pr=prof(a.prof); return `<div class="list-row" data-act="openAppt" data-id="${a.id}"><span class="mono strong" style="width:84px">${brs(a.data)} ${a.hora}</span><span class="grow"><b style="font-weight:500">${pr.esp}</b><div class="small muted">${title(pr.nome)}</div></span>${badge(a.st)}</div>`;};
+  openDrawer({title:esc(title(p.nome)), sub:`Código ${p.id} · ${age(p.nasc)} anos`, footer:`<button class="btn" type="button" data-act="editPatient" data-id="${id}">${ic('edit',16)}Editar</button><button class="btn primary" type="button" data-act="bookPatient" data-id="${id}">${ic('calplus',16)}Agendar consulta</button>`,
+    body:`<dl class="dl">
+      ${p.social?`<div class="full"><dt>Nome social</dt><dd>${esc(title(p.social))}</dd></div>`:''}
+      <div><dt>Data de nascimento</dt><dd>${br(p.nasc)}</dd></div><div><dt>CPF</dt><dd class="mono">${cpfFmt(p.cpf)}</dd></div>
+      <div><dt>Cartão SUS</dt><dd class="mono">${esc(p.cns)||'—'}</dd></div><div><dt>RG</dt><dd class="mono">${esc(p.rg)||'—'}</dd></div>
+      <div><dt>Nome da mãe</dt><dd>${esc(title(p.mae))}</dd></div><div><dt>Prontuário</dt><dd class="mono">${esc(p.pront)||'—'}</dd></div>
+      <div><dt>Telefone</dt><dd class="mono">${esc(p.fone)||'—'}</dd></div><div><dt>Município</dt><dd>${esc(p.cidade)||'—'}</dd></div></dl>
+      <div class="sec-t" style="margin-top:24px">Próximas consultas</div><div class="list">${fut.length?fut.map(row).join(''):'<div class="muted small">Nenhuma consulta futura.</div>'}</div>
+      ${dem.length?`<div class="sec-t">Demandas</div><div class="list">${dem.map(d=>`<div class="list-row" data-act="demView" data-id="${d.id}"><span class="grow"><b style="font-weight:500">#${d.id} · ${d.esp}</b><div class="small muted">desde ${br(d.data)}</div></span>${badge(d.st)}</div>`).join('')}</div>`:''}
+      <div class="sec-t">Histórico</div><div class="list">${past.length?past.map(row).join(''):'<div class="muted small">Sem histórico.</div>'}</div>`});
+}
+function openAppt(id){
+  const a=appt(id), p=pac(a.pac), pr=prof(a.prof), t=today();
+  openDrawer({title:`Agendamento #${a.id}`, sub:`${capital(longDate(a.data))} às ${a.hora}`,
+    footer:`<button class="btn" type="button" data-act="receipt" data-id="${id}" data-keep>${ic('printer',16)}Comprovante</button>${a.st==='agendado'?`<button class="btn danger" type="button" data-act="cancelAppt" data-id="${id}">Cancelar</button>`:''}${a.data===t&&a.st==='agendado'?`<button class="btn ok" type="button" data-act="checkin" data-id="${id}">${ic('login',16)}Registrar chegada</button>`:''}${a.st==='presente'?`<button class="btn primary" type="button" data-act="finish" data-id="${id}">Finalizar</button>`:''}`,
+    body:`<div class="list-row" data-act="openPatient" data-id="${p.id}">${patRow(p, ic('right',18))}</div>
+      <dl class="dl" style="margin-top:18px">
+      <div><dt>Situação</dt><dd>${badge(a.st)}</dd></div><div><dt>Tipo</dt><dd>${a.tipo}${a.extra?' · Encaixe':''}</dd></div>
+      <div><dt>Especialidade</dt><dd>${pr.esp}</dd></div><div><dt>Profissional</dt><dd>${title(pr.nome)}</dd></div>
+      <div><dt>Chegada</dt><dd class="mono">${a.chegada||'—'}</dd></div><div><dt>Telefone</dt><dd class="mono">${esc(p.fone)}</dd></div>
+      ${a.motivo?`<div class="full"><dt>Justificativa do encaixe</dt><dd>${esc(a.motivo)}</dd></div>`:''}
+      ${a.obs?`<div class="full"><dt>Observação</dt><dd>${esc(a.obs)}</dd></div>`:''}</dl>
+      ${a.hist&&a.hist.length?`<div class="sec-t" style="margin-top:24px">Histórico</div><ul class="feed">${a.hist.map(h=>`<li><span class="dot"></span><div>${esc(h.msg)}<div class="small muted">${new Date(h.ts).toLocaleString('pt-BR')}</div></div></li>`).join('')}</ul>`:''}`});
+}
+function demView(id){
+  const d=S.demandas.find(x=>x.id===id), p=pac(d.pac), ap=d.appt&&appt(d.appt);
+  openDrawer({title:`Demanda #${d.id}`, sub:`${d.esp} · cadastrada em ${br(d.data)}`,
+    footer: d.st==='pendente'?`<button class="btn" type="button" data-act="demDevolver" data-id="${id}">Devolver</button><button class="btn primary" type="button" data-act="demAgendar" data-id="${id}">${ic('calplus',16)}Agendar</button>`:`<button class="btn" type="button" data-close>Fechar</button>`,
+    body:`<div class="list-row" data-act="openPatient" data-id="${p.id}">${patRow(p, ic('right',18))}</div>
+      <dl class="dl" style="margin-top:18px">
+      <div><dt>Situação</dt><dd>${badge(d.st)} ${d.prio?'<span class="tag prio">Prioridade</span>':''}</dd></div><div><dt>Tempo de espera</dt><dd>${diffDays(d.data,today())} dias</dd></div>
+      <div><dt>Especialidade</dt><dd>${d.esp}</dd></div><div><dt>Tipo da consulta</dt><dd>${d.tipoCons}</dd></div>
+      <div><dt>Origem</dt><dd>${esc(d.origem)||'—'}</dd></div><div><dt>Solicitante</dt><dd>${esc(d.solic)||'—'}</dd></div>
+      <div><dt>CID</dt><dd>${d.cid?esc(d.cid)+(CIDS[d.cid]?' — '+CIDS[d.cid]:''):'—'}</dd></div><div><dt>Nº documento</dt><dd>${esc(d.doc)||'—'}</dd></div>
+      <div><dt>Período pretendido</dt><dd>${esc(d.periodo)||'—'}${d.turno?' · '+esc(d.turno):''}</dd></div><div><dt>Aceita teleconsulta</dt><dd>${esc(d.tele)}</dd></div>
+      <div class="full"><dt>Observação</dt><dd>${esc(d.obs)||'—'}</dd></div>
+      ${d.motivo?`<div class="full"><dt>Motivo da devolução</dt><dd>${esc(d.motivo)}</dd></div>`:''}
+      ${ap?`<div class="full"><dt>Agendamento</dt><dd><a style="cursor:pointer;color:var(--primary)" data-act="openAppt" data-id="${ap.id}">${br(ap.data)} às ${ap.hora}</a></dd></div>`:''}</dl>`});
+}
+function judView(id){
+  const j=S.jud.find(x=>x.id===id), p=pac(j.pac);
+  openDrawer({title:'Ação judicial', sub:esc(j.processo), footer:j.st==='aberta'?`<button class="btn" type="button" data-act="judDone" data-id="${id}">Marcar cumprida</button>${j.objeto==='Consulta'?`<button class="btn primary" type="button" data-act="judAgendar" data-id="${id}">Agendar</button>`:''}`:`<button class="btn" type="button" data-close>Fechar</button>`,
+    body:`<div class="list-row" data-act="openPatient" data-id="${p.id}">${patRow(p, ic('right',18))}</div><dl class="dl" style="margin-top:18px">
+      <div><dt>Situação</dt><dd>${badge(j.st)}</dd></div><div><dt>Prazo</dt><dd>${br(j.prazo)} ${j.st==='aberta'?prazoTag(j.prazo):''}</dd></div>
+      <div><dt>Objeto</dt><dd>${j.objeto}</dd></div><div><dt>Especialidade</dt><dd>${j.esp}</dd></div>
+      <div><dt>Vara / comarca</dt><dd>${esc(j.vara)||'—'}</dd></div><div><dt>Registrada em</dt><dd>${br(j.data)}</dd></div>
+      <div class="full"><dt>Observação</dt><dd>${esc(j.obs)||'—'}</dd></div></dl>`});
+}
+
+/* =========================================================
+   Formulários em gaveta
+   ========================================================= */
+function newDemanda(){
+  const meses=[]; for(let i=0;i<6;i++){ const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()+i); meses.push(MESES[d.getMonth()]+'/'+d.getFullYear()); }
+  openDrawer({title:'Nova demanda', sub:'Inclui o paciente na fila de regulação', submit:'Incluir na fila', body:`<div class="form-grid">
+    <div class="form-sec">Paciente</div>
+    ${field(req('Paciente'), patPicker('pac'),'full')}
+    <div class="form-sec">Solicitação</div>
+    ${field(req('Especialidade'), `<select class="select" name="esp">${opts(ESPS(),'','Selecione')}</select>`)}
+    ${field(req('Tipo da consulta'), `<select class="select" name="tipoCons">${opts(TIPOS,'Primeira vez')}</select>`)}
+    ${field('Origem', `<select class="select" name="origem">${opts(['Ambulatório','Pronto Socorro','Internação','Unidade Básica'],'Ambulatório')}</select>`)}
+    ${field('Nº documento', `<input class="input" name="doc">`)}
+    ${field('Profissional solicitante', `<input class="input" name="solic" placeholder="Ex.: Dr. Nome Sobrenome">`,'full')}
+    ${field('CID', `<input class="input" name="cid" list="cids" placeholder="Ex.: M54.5"><datalist id="cids">${Object.entries(CIDS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</datalist>`)}
+    <div class="field"><label>Prioridade</label><label class="switch"><input type="checkbox" name="prio">Prioridade clínica</label></div>
+    <div class="form-sec">Preferências</div>
+    ${field('Período pretendido', `<select class="select" name="periodo">${opts(meses,'','Sem preferência')}</select>`)}
+    ${field('Turno', `<select class="select" name="turno">${opts(['Manhã','Tarde'],'','Sem preferência')}</select>`)}
+    ${field('Aceita teleconsulta', `<select class="select" name="tele">${opts(['Sim','Não'],'Não')}</select>`)}
+    ${field('Unidade indicada', `<select class="select" name="unid">${opts([UNIDADE,...EXTERNAS],UNIDADE)}</select>`)}
+    ${field('Observação / justificativa', `<textarea class="textarea" name="obs"></textarea>`,'full')}
+  </div>`, onSubmit:d=>{
+    if(!d.pac){ toast('Selecione o paciente.','error'); return false; }
+    if(!d.esp){ toast('Selecione a especialidade.','error'); return false; }
+    const n={id:S.seq.dem++, pac:+d.pac, esp:d.esp, tipoCons:d.tipoCons, prio:!!d.prio, origem:d.origem, solic:d.solic.trim().toUpperCase(), cid:d.cid.trim().toUpperCase(), obs:d.obs.trim(), doc:d.doc, tele:d.tele, turno:d.turno, periodo:d.periodo, data:today(), st:'pendente', motivo:'', appt:null};
+    S.demandas.push(n); log(`Demanda #${n.id} cadastrada (${n.esp})`); save(); toast(`Demanda #${n.id} incluída na fila.`); render();
+  }});
+}
+function newSol(){
+  openDrawer({title:'Nova solicitação externa', sub:'Pedido de vaga em outra unidade da rede', submit:'Enviar solicitação', body:`<div class="form-grid">
+    ${field(req('Paciente'), patPicker('pac'),'full')}
+    ${field(req('Especialidade'), `<select class="select" name="esp">${opts(ESPS(),'','Selecione')}</select>`)}
+    ${field(req('Unidade de destino'), `<select class="select" name="unidade">${opts(EXTERNAS,'','Selecione')}</select>`)}
+    ${field(req('Justificativa'), `<textarea class="textarea" name="just"></textarea>`,'full')}</div>`,
+    onSubmit:d=>{
+      if(!d.pac||!d.esp||!d.unidade||!d.just.trim()){ toast('Preencha todos os campos obrigatórios.','error'); return false; }
+      const s={id:S.seq.sol++, pac:+d.pac, esp:d.esp, unidade:d.unidade, just:d.just.trim(), st:'enviada', data:today(), resposta:''};
+      S.sol.push(s); log(`Solicitação externa #${s.id} enviada a ${s.unidade}`); save(); toast('Solicitação enviada.'); UI.route='solicitacoes'; render();
+    }});
+}
+function newJud(){
+  openDrawer({title:'Registrar ação judicial', submit:'Registrar', body:`<div class="form-grid">
+    ${field(req('Nº do processo'), `<input class="input mono" name="processo" placeholder="0000000-00.0000.0.00.0000">`,'full')}
+    ${field(req('Paciente'), patPicker('pac'),'full')}
+    ${field(req('Objeto'), `<select class="select" name="objeto">${opts(['Consulta','Exame','Cirurgia','Medicamento'],'Consulta')}</select>`)}
+    ${field(req('Especialidade'), `<select class="select" name="esp">${opts(ESPS(),'','Selecione')}</select>`)}
+    ${field(req('Prazo para cumprimento'), `<input type="date" class="input" name="prazo" min="${today()}">`)}
+    ${field('Vara / comarca', `<input class="input" name="vara">`)}
+    ${field('Observação', `<textarea class="textarea" name="obs"></textarea>`,'full')}</div>`,
+    onSubmit:d=>{
+      if(!d.processo.trim()||!d.pac||!d.esp||!d.prazo){ toast('Preencha os campos obrigatórios.','error'); return false; }
+      const j={id:S.seq.jud++, processo:d.processo.trim(), pac:+d.pac, objeto:d.objeto, esp:d.esp, prazo:d.prazo, vara:d.vara.trim(), obs:d.obs.trim(), st:'aberta', data:today()};
+      S.jud.push(j); log(`Ação judicial registrada: ${j.processo}`); save(); toast('Ação judicial registrada.'); UI.route='judicial'; render();
+    }});
+}
+function receipt(id){
+  const a=appt(id), p=pac(a.pac), pr=prof(a.prof);
+  openModal({title:'Comprovante de agendamento', wide:true, body:`<div class="receipt">
+    <div class="rh"><div class="who"><div class="avatar" style="background:var(--primary);color:#fff">${ic('plus',18)}</div><div><b>${UNIDADE}</b><span>Central de Regulação · Módulo Ambulatorial</span></div></div><div class="mono small muted">Nº ${String(a.id).padStart(6,'0')}</div></div>
+    <dl class="dl"><div><dt>Paciente</dt><dd>${esc(title(p.nome))}</dd></div><div><dt>Código / CNS</dt><dd class="mono">${p.id} · ${esc(p.cns)||'—'}</dd></div>
+      <div><dt>Data</dt><dd>${capital(longDate(a.data))}</dd></div><div><dt>Horário</dt><dd>${a.hora}</dd></div>
+      <div><dt>Especialidade</dt><dd>${pr.esp} · ${a.tipo}</dd></div><div><dt>Profissional</dt><dd>${title(pr.nome)}</dd></div></dl>
+    <div class="sec-t" style="margin-top:18px">Orientações</div>
+    <ul><li>Chegue com 30 minutos de antecedência.</li><li>Traga documento com foto, Cartão SUS e o encaminhamento médico.</li><li>Se não puder comparecer, avise a unidade para liberar a vaga.</li></ul>
+    <div class="small muted" style="margin-top:14px">Emitido em ${new Date().toLocaleString('pt-BR')} · documento fictício de demonstração</div></div>`,
+    actions:[{label:'Fechar',cls:'ghost'},{label:ic('printer',16)+'Imprimir',cls:'primary',fn:()=>{ document.body.classList.add('print-modal'); window.print(); document.body.classList.remove('print-modal'); return false; }}]});
+}
+
+/* =========================================================
+   Ações
+   ========================================================= */
+function setSt(a, st, msg){ a.st=st; (a.hist=a.hist||[]).push({ts:Date.now(), msg}); }
+const dem = el => S.demandas.find(x=>x.id===+el.dataset.id);
+const ACT = {
+  toggleNav: ()=>document.body.classList.toggle('nav-open'),
+  toggleTheme: ()=>{ const d=document.documentElement.dataset.theme!=='dark'; document.documentElement.dataset.theme=d?'dark':'light'; try{localStorage.setItem('regamb_theme',d?'dark':'light')}catch(e){} paintChrome(); },
+  reset: ()=>confirmBox('Restaurar dados de exemplo','Todos os cadastros e agendamentos feitos nesta demonstração serão substituídos pelos dados iniciais.','Restaurar',()=>{ S=seed(); save(); UI=newUI(); render(); toast('Dados restaurados.'); },true),
+  bell: ()=>$('#bell-dd').classList.toggle('hide'),
+  print: ()=>window.print(),
+
+  newPatient: ()=>patientForm(null, p=>openPatient(p.id)),
+  openPatient: el=>openPatient(+el.dataset.id),
+  editPatient: el=>patientForm(pac(+el.dataset.id), p=>openPatient(p.id)),
+  bookPatient: el=>{ resetBook({pac:+el.dataset.id, step:2}); nav('agendar'); },
+
+  bookReset: ()=>{ resetBook(); render(); },
+  newPatBook: ()=>patientForm(null, p=>ACT.bookPac({dataset:{id:p.id}})),
+  bookPac: el=>{ const B=UI.book; B.pac=+el.dataset.id;
+    if(B.preset){ const pr=prof(B.preset.prof); Object.assign(B,{esp:pr.esp, prof:pr.id, day:B.preset.day, month:B.preset.day.slice(0,7), sel:{prof:pr.id,hora:B.preset.hora}, step:4}); }
+    else B.step = B.esp ? (B.sel?4:3) : 2;
+    render(); window.scrollTo(0,0); },
+  bookStep: el=>{ const n=+el.dataset.n; if(n===1) UI.book.preset=null; UI.book.step=n; render(); window.scrollTo(0,0); },
+  bookEsp: el=>{ const B=UI.book; if(B.esp!==el.dataset.v) Object.assign(B,{esp:el.dataset.v, prof:'', month:null, day:null, sel:null}); render(); },
+  bookTipo: el=>{ UI.book.tipo=el.dataset.v; render(); },
+  bookMonth: el=>{ const B=UI.book, [y,m]=B.month.split('-').map(Number), d=new Date(y,m-1+(+el.dataset.v),1); B.month=d.getFullYear()+'-'+pad(d.getMonth()+1); render(); },
+  bookDay: el=>{ UI.book.day=el.dataset.v; UI.book.sel=null; render(); },
+  bookFirst: ()=>{ const B=UI.book, d=firstFree(B.esp,B.prof); if(!d) return toast('Sem vagas nos próximos meses.','error'); B.day=d; B.month=d.slice(0,7); B.sel=null; render(); },
+  bookSlot: el=>{ UI.book.sel={prof:+el.dataset.p, hora:el.dataset.h}; render(); },
+  bookConfirm: ()=>{
+    const B=UI.book, pr=prof(B.sel.prof);
+    if(!freeSlots(pr,B.day).includes(B.sel.hora)){ toast('Este horário acabou de ser ocupado. Escolha outro.','error'); B.sel=null; B.step=3; return render(); }
+    const a={id:S.seq.appt++, pac:B.pac, prof:pr.id, data:B.day, hora:B.sel.hora, tipo:B.tipo, st:'agendado', chegada:'', obs:B.obs.trim(), extra:false, hist:[{ts:Date.now(), msg:'Agendado por Usuário Demo'}]};
+    S.appts.push(a);
+    if(B.demanda){ const d=S.demandas.find(x=>x.id===B.demanda); d.st='agendada'; d.appt=a.id; }
+    if(B.jud){ const j=S.jud.find(x=>x.id===B.jud); j.obs=(j.obs?j.obs+' · ':'')+`Agendado para ${br(a.data)} às ${a.hora}`; }
+    log(`Consulta agendada: ${title(pac(a.pac).nome)} — ${pr.esp}, ${brs(a.data)} ${a.hora}`);
+    save(); B.done=a.id; toast('Consulta agendada com sucesso.'); render(); window.scrollTo(0,0);
+  },
+  receipt: el=>receipt(+el.dataset.id),
+  goDay: el=>{ UI.day.date=el.dataset.v; UI.day.prof=''; resetBook(); nav('agenda'); },
+
+  checkin: el=>{ const a=appt(+el.dataset.id); a.chegada=nowHM(); setSt(a,'presente','Chegada registrada às '+a.chegada); log('Chegada registrada: '+title(pac(a.pac).nome)); save(); toast(`Chegada de ${esc(title(pac(a.pac).nome))} registrada.`); render(); },
+  finish: el=>{ const a=appt(+el.dataset.id); setSt(a,'atendido','Atendimento finalizado'); save(); toast('Atendimento finalizado.'); render(); },
+  falta: el=>{ const a=appt(+el.dataset.id); setSt(a,'ausente','Falta registrada'); log('Falta registrada: '+title(pac(a.pac).nome)); save(); toast('Falta registrada.','info'); render(); },
+  undo: el=>{ const a=appt(+el.dataset.id); a.chegada=''; setSt(a,'agendado','Situação revertida para agendado'); save(); render(); },
+  cancelAppt: el=>{ const a=appt(+el.dataset.id); confirmBox('Cancelar agendamento',`Cancelar a consulta de <b>${esc(title(pac(a.pac).nome))}</b> em ${br(a.data)} às ${a.hora}? A vaga será liberada.`,'Cancelar consulta',()=>{ setSt(a,'cancelado','Cancelado por Usuário Demo'); log('Agendamento cancelado: '+title(pac(a.pac).nome)); save(); toast('Agendamento cancelado.','info'); render(); },true); },
+  openAppt: el=>openAppt(+el.dataset.id),
+  setRec: el=>{ UI.rec.f=el.dataset.v; render(); },
+  dayNav: el=>{ const v=+el.dataset.v; UI.day.date = v ? addDays(UI.day.date,v) : today(); render(); },
+  slotBook: el=>{ resetBook({preset:{prof:+el.dataset.p, day:UI.day.date, hora:el.dataset.h}}); nav('agendar'); },
+  setAus: el=>{ UI.aus.days=+el.dataset.v; render(); },
+  reagendar: el=>{ const a=appt(+el.dataset.id); resetBook({pac:a.pac, esp:prof(a.prof).esp, tipo:'Retorno', step:3}); nav('agendar'); },
+  contato: el=>{ const a=appt(+el.dataset.id), p=pac(a.pac);
+    openModal({title:'Registrar contato', body:`<p style="margin-top:0">${esc(title(p.nome))} · <b class="mono">${esc(p.fone)}</b></p>${field('Resultado do contato', `<select class="select" name="r">${opts(['Paciente será reagendado','Não atendeu','Número inválido','Paciente desistiu do atendimento','Já atendido em outro serviço'])}</select>`)}`,
+      actions:[{label:'Cancelar',cls:'ghost'},{label:'Salvar',cls:'primary',fn:d=>{ a.contato=d.r+' ('+brs(today())+')'; (a.hist=a.hist||[]).push({ts:Date.now(),msg:'Contato: '+d.r}); save(); toast('Contato registrado.'); render(); }}]}); },
+
+  newDemanda: ()=>newDemanda(),
+  setDem: el=>{ UI.dem.tab=el.dataset.v; render(); },
+  demView: el=>demView(+el.dataset.id),
+  demAgendar: el=>{ const d=dem(el); resetBook({pac:d.pac, esp:d.esp, tipo:d.tipoCons, demanda:d.id, step:3}); nav('agendar'); },
+  demDevolver: el=>{ const d=dem(el);
+    openModal({title:`Devolver demanda #${d.id}`, body:field(req('Motivo da devolução'), `<select class="select" name="m">${opts(['Documentação incompleta','Especialidade incorreta','Paciente já atendido','Paciente não localizado','Fora do perfil da unidade'],'','Selecione')}</select>`),
+      actions:[{label:'Cancelar',cls:'ghost'},{label:'Devolver',cls:'danger',fn:x=>{ if(!x.m){ toast('Informe o motivo.','error'); return false; } d.st='devolvida'; d.motivo=x.m; log(`Demanda #${d.id} devolvida: ${x.m}`); save(); toast('Demanda devolvida.','info'); render(); }}]}); },
+
+  newSol: ()=>newSol(),
+  setSol: el=>{ UI.sol.tab=el.dataset.v; render(); },
+  solResp: el=>{ const s=S.sol.find(x=>x.id===+el.dataset.id);
+    if(Math.random()<.7){ s.st='aceita'; s.resposta=addDays(today(),5+Math.floor(Math.random()*20))+' '+pad(7+Math.floor(Math.random()*4))+':'+['00','20','40'][Math.floor(Math.random()*3)]; toast(`${s.unidade} aceitou a solicitação #${s.id}.`); }
+    else { s.st='recusada'; s.resposta='Sem oferta de vaga no período'; toast(`${s.unidade} recusou a solicitação #${s.id}.`,'info'); }
+    log(`Solicitação #${s.id} ${s.st} por ${s.unidade}`); save(); render(); },
+  solCancel: el=>{ const s=S.sol.find(x=>x.id===+el.dataset.id); confirmBox('Cancelar solicitação',`Cancelar a solicitação #${s.id}?`,'Cancelar solicitação',()=>{ S.sol=S.sol.filter(x=>x!==s); save(); render(); },true); },
+
+  newJud: ()=>newJud(),
+  judView: el=>judView(+el.dataset.id),
+  judAgendar: el=>{ const j=S.jud.find(x=>x.id===+el.dataset.id); resetBook({pac:j.pac, esp:j.esp, jud:j.id, step:3}); nav('agendar'); },
+  judDone: el=>{ const j=S.jud.find(x=>x.id===+el.dataset.id); j.st='cumprida'; log(`Ação judicial cumprida: ${j.processo}`); save(); toast('Ação marcada como cumprida.'); render(); },
+
+  block: el=>{ const p=prof(+el.dataset.p);
+    openModal({title:`Bloquear agenda — ${title(p.nome)}`, body:`<div class="form-grid">${field(req('Data'), `<input type="date" class="input" name="data" min="${today()}">`)}${field(req('Motivo'), `<select class="select" name="m">${opts(['Férias','Congresso','Licença médica','Folga','Outro'],'','Selecione')}</select>`)}</div>
+      <p class="small muted" style="margin-bottom:0">Pacientes já agendados na data serão cancelados e incluídos na fila de demandas com prioridade.</p>`,
+      actions:[{label:'Cancelar',cls:'ghost'},{label:'Bloquear',cls:'danger',fn:d=>{
+        if(!d.data||!d.m){ toast('Informe a data e o motivo.','error'); return false; }
+        if(!p.dias.includes(D(d.data).getDay())){ toast('O profissional não atende nesta data.','error'); return false; }
+        if(p.bloqueios.some(b=>b.data===d.data)){ toast('Esta data já está bloqueada.','error'); return false; }
+        p.bloqueios.push({data:d.data, motivo:d.m});
+        const af=S.appts.filter(a=>a.prof===p.id&&a.data===d.data&&a.st==='agendado');
+        af.forEach(a=>{ setSt(a,'cancelado','Cancelado por bloqueio de agenda ('+d.m+')'); S.demandas.push({id:S.seq.dem++, pac:a.pac, esp:p.esp, tipoCons:a.tipo, prio:true, origem:'Remanejamento', solic:'', cid:'', obs:`Remanejamento: bloqueio de agenda em ${br(d.data)} (${d.m})`, doc:'', tele:'Não', turno:'', periodo:'', data:today(), st:'pendente', motivo:'', appt:null}); });
+        log(`Agenda bloqueada: ${title(p.nome)} em ${br(d.data)}`); save();
+        toast(af.length?`Agenda bloqueada. ${af.length} paciente(s) enviado(s) para a fila de demandas.`:'Agenda bloqueada.'); render();
+      }}]}); },
+  unblock: el=>{ const p=prof(+el.dataset.p); p.bloqueios=p.bloqueios.filter(b=>b.data!==el.dataset.v); save(); toast('Bloqueio removido. Os horários voltaram a ficar disponíveis.'); render(); },
+  profAgenda: el=>{ const p=prof(+el.dataset.p); UI.day.prof=String(p.id); let d=today(); for(let i=0;i<14&&!works(p,d);i++) d=addDays(d,1); UI.day.date=d; nav('agenda'); },
+
+  relPreset: el=>{ const n=+el.dataset.v; Object.assign(UI.rel,{preset:n, de:addDays(today(),-n), ate:today()}); render(); },
+  csv: ()=>{
+    const R=UI.rel, rows=[['data','hora','paciente','codigo','especialidade','profissional','tipo','situacao','encaixe']];
+    S.appts.filter(a=>a.data>=R.de&&a.data<=R.ate).sort(byTime).forEach(a=>{ const p=pac(a.pac), pr=prof(a.prof); rows.push([br(a.data),a.hora,p.nome,p.id,pr.esp,pr.nome,a.tipo,ST[a.st][0],a.extra?'sim':'não']); });
+    const csv='﻿'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})), l=document.createElement('a');
+    l.href=url; l.download=`agendamentos_${R.de}_${R.ate}.csv`; l.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+    toast(`${rows.length-1} registros exportados.`);
+  },
+};
+
+const FORMS = {
+  encaixe: d=>{
+    if(!d.pac||!d.prof||!d.data||!d.hora||!d.motivo) return toast('Preencha todos os campos obrigatórios.','error');
+    const p=prof(+d.prof);
+    if(!works(p,d.data)) return toast('O profissional não tem agenda nesta data.','error');
+    if(d.data===today() && d.hora<nowHM()) return toast('O horário informado já passou.','error');
+    const a={id:S.seq.appt++, pac:+d.pac, prof:p.id, data:d.data, hora:d.hora, tipo:d.tipo, st:'agendado', chegada:'', obs:d.obs.trim(), motivo:d.motivo, extra:true, hist:[{ts:Date.now(),msg:'Encaixe registrado: '+d.motivo}]};
+    S.appts.push(a); log(`Encaixe: ${title(pac(a.pac).nome)} — ${p.esp}, ${brs(a.data)} ${a.hora}`); save();
+    toast('Encaixe registrado.'); render();
+  },
+  troca: d=>{
+    if(!d.appt) return toast('Selecione o horário a ser trocado.','error');
+    if(!d.novo||!d.motivo) return toast('Informe o novo paciente e o motivo.','error');
+    const a=appt(+d.appt);
+    if(a.pac===+d.novo) return toast('O novo paciente é o mesmo do agendamento.','error');
+    const de=a.pac; a.pac=+d.novo; (a.hist=a.hist||[]).push({ts:Date.now(), msg:`Troca de paciente: ${title(pac(de).nome)} → ${title(pac(a.pac).nome)} (${d.motivo})`});
+    S.trocas.unshift({data:a.data, hora:a.hora, de, para:a.pac, motivo:d.motivo, appt:a.id});
+    log(`Troca de paciente no horário ${brs(a.data)} ${a.hora}`); save(); toast('Troca realizada.'); render();
+  },
+  ticket: d=>{
+    if(!d.assunto||!d.desc.trim()) return toast('Preencha o assunto e a descrição.','error');
+    const k={protocolo:'HD-'+new Date().getFullYear()+'-'+String(S.seq.tk++).padStart(5,'0'), assunto:d.assunto, desc:d.desc, data:today(), st:'aberto'};
+    S.tickets.unshift(k); save(); toast(`Chamado ${k.protocolo} aberto.`); render();
+  },
+};
+
+/* =========================================================
+   Renderização e eventos
+   ========================================================= */
+function paintChrome(){
+  const dark=document.documentElement.dataset.theme==='dark';
+  $('#theme-btn').innerHTML=ic(dark?'sun':'moon');
+  const c=counts(), prio=S.demandas.filter(d=>d.st==='pendente'&&d.prio).length;
+  const items=[];
+  if(c.recepcao) items.push(['recepcao','clock',`${c.recepcao} paciente(s) aguardando atendimento`]);
+  if(prio) items.push(['demandas','inbox',`${prio} demanda(s) prioritária(s) na fila`]);
+  if(c.judicial) items.push(['judicial','scale',`${c.judicial} ação(ões) judicial(is) com prazo em até 7 dias`]);
+  if(c.solicitacoes) items.push(['solicitacoes','send',`${c.solicitacoes} solicitação(ões) externa(s) aguardando resposta`]);
+  $('#bell').innerHTML=ic('bell')+(items.length?`<span class="dot">${items.length}</span>`:'');
+  $('#bell-dd').innerHTML=`<div class="dd-h">Pendências</div>`+(items.length?items.map(([r,i,t])=>`<button class="dd-item" data-nav="${r}">${ic(i,16)}<span>${t}</span></button>`).join(''):'<div class="empty small">Nenhuma pendência.</div>');
+}
+function render(){
+  const ae=document.activeElement, fid=ae&&ae.id&&$('#view').contains(ae)?ae.id:null, s1=ae&&ae.selectionStart, s2=ae&&ae.selectionEnd;
+  $('#nav').innerHTML=navHTML();
+  const info=ROUTE_INFO[UI.route];
+  $('#crumb').textContent=info.group; $('#ptitle').textContent=info.label;
+  document.title=info.label+' · Central de Regulação';
+  if(location.hash.slice(1)!==UI.route) history.replaceState(null,'','#'+UI.route);
+  $('#view').innerHTML=PAGES[UI.route]();
+  paintChrome();
+  if(fid){ const el=document.getElementById(fid); if(el){ el.focus(); try{ el.setSelectionRange(s1,s2); }catch(e){} } }
+}
+function setPath(path, v){ const k=path.split('.'); let o=UI; for(let i=0;i<k.length-1;i++) o=o[k[i]]; o[k.at(-1)]=v; }
+
 document.addEventListener('click', e=>{
   const t=e.target;
-  const g=t.closest('[data-go]'); if(g){ go(g.dataset.go); return; }
+  if(!t.closest('.bell-wrap')) $('#bell-dd').classList.add('hide');
+  if(!t.closest('.gsearch')) $('#gresults').classList.add('hide');
+  $$('.picker .dropdown').forEach(d=>{ if(!d.parentElement.contains(t)) d.classList.add('hide'); });
 
-  const at=t.closest('[data-agtab]');
-  if(at){ if(at.dataset.agtab!=='paciente' && !UI.ag.pac) return toast('Selecione um paciente primeiro.', true); UI.ag.tab=at.dataset.agtab; return render(); }
-  const dt=t.closest('[data-demtab]'); if(dt){ keepDemForm(); UI.dem.tab=dt.dataset.demtab; return render(); }
+  const pc=t.closest('[data-pick-id]'); if(pc){ setPicker(pc.closest('[data-picker]'), +pc.dataset.pickId); return; }
+  const pn=t.closest('[data-pick-new]'); if(pn){ const pk=pn.closest('[data-picker]'); patientForm(null, p=>setPicker(pk,p.id)); return; }
+  const pclr=t.closest('[data-pick-clear]'); if(pclr){ const pk=pclr.closest('[data-picker]'); $('input[type=hidden]',pk).value=''; $('.picker-sel',pk).classList.add('hide'); $('.picker-in',pk).classList.remove('hide'); const q=$('.picker-in input',pk); q.value=''; q.focus(); return; }
 
-  const pk=t.closest('[data-pick]');
-  if(pk){
-    const id=+pk.dataset.id, ctx=pk.dataset.pick;
-    if(ctx==='ag'){ UI.ag.pac=id; UI.ag.tab='selecao'; }
-    if(ctx==='dem'){ keepDemForm(); UI.dem.pac=id; }
-    if(ctx==='cons'){ UI.cons.pac=id; }
-    if(ctx==='pac'){ return openPacModal(pac(id), ()=>render()); }
-    return render();
-  }
+  const n=t.closest('[data-nav]');
+  if(n){ e.preventDefault(); $$('.overlay').forEach(o=>o.remove()); $('#gsearch').value=''; nav(n.dataset.nav); return; }
+  const gp=t.closest('[data-gpat]'); if(gp){ $('#gresults').classList.add('hide'); $('#gsearch').value=''; openPatient(+gp.dataset.gpat); return; }
 
-  const mo=t.closest('[data-mes]'); if(mo){ UI.ag.mes=+mo.dataset.mes; UI.ag.dia=null; return render(); }
-  const dy=t.closest('[data-day]'); if(dy){ UI.ag.dia=dy.dataset.day; return render(); }
-
-  const b=t.closest('[data-act]'); if(!b) return;
-  const act=b.dataset.act, id=+b.dataset.id;
-  const ap = () => S.appts.find(a=>a.id===id);
-  switch(act){
-    case 'novoPac': {
-      const ctx = UI.view==='demanda'?'dem':UI.view==='agenda'?'ag':'pac';
-      openPacModal(null, p=>{ if(ctx==='ag'){UI.ag.pac=p.id; UI.ag.tab='selecao';} if(ctx==='dem') UI.dem.pac=p.id; UI.pacientes.q={}; render(); });
-      break; }
-    case 'goInterna': UI.ag.tab='interna'; render(); break;
-    case 'limparAg': Object.assign(UI.ag,{retorno:false,inter:false,profNome:'',esp:'',dia:null,obs:''}); render(); break;
-    case 'agendar': {
-      const pid=+b.dataset.prof, row=b.closest('tr');
-      const hora=row.querySelector(`[name=hora_${pid}]`).value, tipo=row.querySelector(`[name=tipo_${pid}]`).value;
-      const obs=($('[name=obs]')||{}).value||'';
-      if(S.appts.some(a=>a.pac==UI.ag.pac&&a.data===UI.ag.dia&&a.st!=='cancelado'&&prof(a.prof).esp===prof(pid).esp))
-        if(!confirm('O paciente já possui agendamento nesta especialidade neste dia. Continuar?')) return;
-      S.appts.push({id:S.nextAppt++, pac:UI.ag.pac, prof:pid, data:UI.ag.dia, hora, tipo, st:'agendado', obs, unidade:UNIDADE, chegada:''});
-      save(); toast(`Agendado: ${br(UI.ag.dia)} às ${hora} com ${prof(pid).nome}`); UI.ag.obs=''; render(); break; }
-    case 'solicitarExt': {
-      if(!UI.ag.esp) return toast('Selecione a especialidade.', true);
-      const u=UNID_EXT[+b.dataset.u];
-      S.demandas.push({id:S.nextDem++, tipo:'Consulta', esp:UI.ag.esp, pac:UI.ag.pac, data:today(), prio:false, origem:'Ambulatório', doc:'', solic:'', tipoCons:UI.ag.tipo, obs:'Agenda externa: '+u.nome, st:'pendente', unidInd:u.nome, tele:'Não', cid:''});
-      save(); toast('Solicitação enviada para '+u.nome); break; }
-    case 'inserirDem': {
-      const F=Object.fromEntries(new FormData($('#demForm'))); F.prio=!!F.prio;
-      if(!F.esp||!F.tipoCons||!F.st) { UI.dem.form=F; return toast('Preencha os campos obrigatórios (*).', true); }
-      if(!UI.dem.pac) { UI.dem.form=F; return toast('Selecione o paciente.', true); }
-      S.demandas.push({...F, id:S.nextDem++, pac:UI.dem.pac, data:today()});
-      save(); UI.dem.form={}; UI.dem.pac=null; UI.dem.q={}; toast('Demanda inserida com sucesso.'); UI.dem.tab='listar'; render(); break; }
-    case 'demAgendar': {
-      const d=S.demandas.find(x=>x.id===id); d.st='agendada'; save();
-      Object.assign(UI.ag,{pac:d.pac, esp:d.esp, tab:'interna', dia:null, mes:1, tipo:d.tipoCons||'Primeira Vez'}); go('agenda'); break; }
-    case 'demDevolver': { const d=S.demandas.find(x=>x.id===id); if(confirm('Devolver demanda nº '+id+'?')){ d.st='devolvida'; save(); render(); } break; }
-    case 'chegada': { const a=ap(); a.st='presente'; const n=new Date(); a.chegada=pad(n.getHours())+':'+pad(n.getMinutes()); save(); toast('Chegada registrada.'); render(); break; }
-    case 'desfazer': { const a=ap(); a.st='agendado'; a.chegada=''; save(); render(); break; }
-    case 'ausente': { ap().st='ausente'; save(); render(); break; }
-    case 'cancelar': { if(confirm('Cancelar este agendamento?')){ ap().st='cancelado'; save(); render(); } break; }
-    case 'reagendar': { const a=ap(); Object.assign(UI.ag,{pac:a.pac, esp:prof(a.prof).esp, tab:'interna', dia:null, mes:1, tipo:'Retorno'}); go('agenda'); break; }
-    case 'print': window.print(); break;
-  }
+  const b=t.closest('[data-act]'); if(!b || b.disabled) return;
+  if(b.tagName==='A'||b.tagName==='BUTTON') e.preventDefault();
+  const fn=ACT[b.dataset.act]; if(!fn) return;
+  // ações disparadas de dentro de uma gaveta/modal fecham a sobreposição antes de agir
+  const ov=b.closest('.overlay'); if(ov && !('keep' in b.dataset)) ov.remove();
+  fn(b, e);
 });
-
-document.addEventListener('submit', e=>{
-  const f=e.target.closest('[data-search]'); if(!f) return;
-  e.preventDefault();
-  const q=Object.fromEntries(new FormData(f));
-  const ctx=f.dataset.search;
-  const st = ctx==='ag'?UI.ag: ctx==='dem'?UI.dem: ctx==='cons'?UI.cons: UI.pacientes;
-  if(ctx==='dem') keepDemForm();
-  st.q=q; render();
+document.addEventListener('input', e=>{
+  const t=e.target;
+  if(t.dataset.model && t.tagName!=='SELECT'){ if(t.type==='date' && !t.value) return; setPath(t.dataset.model, t.value); if(t.dataset.model!=='book.obs') render(); return; }
+  if('pickerQ' in t.dataset){
+    const dd=t.nextElementSibling, res=searchPatients(t.value,6);
+    dd.innerHTML = (t.value.trim()? (res.length?res.map(p=>`<button type="button" class="dd-item" data-pick-id="${p.id}"><div class="avatar">${initials(p.nome)}</div><div class="who"><div><b>${esc(title(p.nome))}</b><span>Cód. ${p.id} · ${br(p.nasc)}</span></div></div></button>`).join(''):'<div class="empty small" style="padding:14px">Nenhum paciente encontrado.</div>') : '')
+      + `<button type="button" class="dd-item" data-pick-new style="color:var(--primary);font-weight:600">${ic('plus',16)}Cadastrar novo paciente</button>`;
+    dd.classList.remove('hide'); return;
+  }
+  if(t.id==='gsearch') globalSearch(t.value);
 });
-
 document.addEventListener('change', e=>{
-  const t=e.target, n=t.name;
-  if(UI.view==='agenda'){
-    const A=UI.ag;
-    if(n==='esp'){ A.esp=t.value; A.dia=null; return render(); }
-    if(n==='tipo'){ A.tipo=t.value; return; }
-    if(n==='retorno'){ A.retorno=t.checked; if(t.checked) A.inter=false; return render(); }
-    if(n==='inter'){ A.inter=t.checked; if(t.checked) A.retorno=false; return render(); }
-    if(n==='profNome'){ A.profNome=t.value; A.dia=null; return render(); }
-    if(n==='obs'){ A.obs=t.value; return; }
-  }
-  const fl=t.closest('[data-filter]'); if(!fl) return;
-  const k=fl.dataset.filter;
-  if(k==='dem') UI.dem.filtro[n]=t.value;
-  if(k==='diaria') UI.diaria[n]=t.value;
-  if(k==='rel') UI.rel[n]=t.value;
-  render();
+  const t=e.target;
+  if(t.dataset.model && t.tagName==='SELECT'){ setPath(t.dataset.model, t.value); render(); }
 });
+document.addEventListener('submit', e=>{
+  const f=e.target.closest('[data-form]'); if(!f) return;
+  e.preventDefault(); FORMS[f.dataset.form](Object.fromEntries(new FormData(f)), f);
+});
+document.addEventListener('focusin', e=>{ if(e.target.dataset && 'pickerQ' in e.target.dataset) e.target.dispatchEvent(new Event('input',{bubbles:true})); });
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); $('#gsearch').focus(); $('#gsearch').select(); }
+  if(e.key==='Escape'){ const o=$$('.overlay').at(-1); if(o) o.remove(); $('#gresults').classList.add('hide'); $('#bell-dd').classList.add('hide'); document.body.classList.remove('nav-open'); }
+  if(e.key==='Enter' && e.target.id==='gsearch'){ e.preventDefault(); $('#gresults .dd-item')?.click(); }
+});
+document.addEventListener('mousedown', e=>{ if(document.body.classList.contains('nav-open') && !e.target.closest('.side') && !e.target.closest('.menu-btn')) document.body.classList.remove('nav-open'); });
+window.addEventListener('hashchange', ()=>{ const r=location.hash.slice(1); if(PAGES[r] && r!==UI.route) nav(r); });
 
+function globalSearch(v){
+  const dd=$('#gresults'); if(!v.trim()){ dd.classList.add('hide'); return; }
+  const pats=searchPatients(v,6), q=norm(v);
+  const pages=Object.entries(ROUTE_INFO).filter(([k,i])=>norm(i.label).includes(q)).slice(0,4);
+  dd.innerHTML=(pats.length?`<div class="dd-h">Pacientes</div>`+pats.map(p=>`<button class="dd-item" data-gpat="${p.id}"><div class="avatar">${initials(p.nome)}</div><div class="who"><div><b>${esc(title(p.nome))}</b><span>Cód. ${p.id} · CPF ${cpfFmt(p.cpf)}</span></div></div></button>`).join(''):'')
+    +(pages.length?`<div class="dd-h">Telas</div>`+pages.map(([k,i])=>`<button class="dd-item" data-nav="${k}">${ic(i.icon,16)}${i.label}</button>`).join(''):'')
+    +(!pats.length&&!pages.length?'<div class="empty small">Nada encontrado.</div>':'');
+  dd.classList.remove('hide');
+}
+
+/* Inicialização */
+try{ const th=localStorage.getItem('regamb_theme'); if(th) document.documentElement.dataset.theme=th; }catch(e){}
+$('.menu-btn').innerHTML=ic('menu'); $('#gs-ico').innerHTML=ic('search',16); $('#unit-name').textContent=UNIDADE;
+{ const r=location.hash.slice(1); if(PAGES[r]) UI.route=r; }
 render();
+// mantém tempos de espera e horários livres atualizados
+setInterval(()=>{ if(!$('.overlay') && !$('#view').contains(document.activeElement)) render(); }, 60000);
 </script>
 </body>
 </html>
